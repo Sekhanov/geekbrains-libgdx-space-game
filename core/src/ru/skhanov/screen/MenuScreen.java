@@ -3,8 +3,6 @@ package ru.skhanov.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.skhanov.base.Base2DScreen;
@@ -19,8 +17,10 @@ public class MenuScreen extends Base2DScreen {
     private Vector2 buffer;
     private boolean isTouch;
     private Vector2 spaceshipSpeed;
-    float spaceshipHalfWidth = 0.1f;
-    float spaceshipSpeedRate = 0.005f;
+
+    private static final float SQUARE_COORDINATE_VALUE = 42f;
+    private static final float SPACESHIP_SIZE = SQUARE_COORDINATE_VALUE / 5;
+    private static final float SPACESHIP_SPEED_RATE = 0.1f;
 
     @Override
     public void show() {
@@ -28,7 +28,7 @@ public class MenuScreen extends Base2DScreen {
 //        batch = new SpriteBatch();
         img = new Texture("pixelSpace.jpg");
         img2 = new Texture("pixelSpaceShip.png");
-        spaceshipPosition = new Vector2(-0, -0.5f);
+        spaceshipPosition = new Vector2(0, -SQUARE_COORDINATE_VALUE / 2);
         newSpaceshipPosition = new Vector2(0, 0);
         spaceshipSpeed = new Vector2(0, 0);
         buffer = new Vector2(0, 0);
@@ -42,8 +42,9 @@ public class MenuScreen extends Base2DScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
-        batch.draw(img, -0.5f, -0.5f, 1f, 1f);
-        batch.draw(img2, spaceshipPosition.x - spaceshipHalfWidth, spaceshipPosition.y, 0.2f, 0.2f);
+        batch.draw(img, -SQUARE_COORDINATE_VALUE / 2, -SQUARE_COORDINATE_VALUE / 2, SQUARE_COORDINATE_VALUE, SQUARE_COORDINATE_VALUE);
+        batch.draw(img2, spaceshipPosition.x - (SPACESHIP_SIZE / 2), spaceshipPosition.y,
+                SPACESHIP_SIZE, SPACESHIP_SIZE);
         batch.end();
 
 
@@ -90,16 +91,16 @@ public class MenuScreen extends Base2DScreen {
     public boolean keyDown(int keycode) {
         switch (keycode) {
             case 19:
-                spaceshipSpeed.add(0, spaceshipSpeedRate);
+                spaceshipSpeed.add(0, SPACESHIP_SPEED_RATE);
                 break;
             case 20:
-                spaceshipSpeed.add(0, -spaceshipSpeedRate);
+                spaceshipSpeed.add(0, -SPACESHIP_SPEED_RATE);
                 break;
             case 21:
-                spaceshipSpeed.add(-spaceshipSpeedRate, 0);
+                spaceshipSpeed.add(-SPACESHIP_SPEED_RATE, 0);
                 break;
             case 22:
-                spaceshipSpeed.add(spaceshipSpeedRate, 0);
+                spaceshipSpeed.add(SPACESHIP_SPEED_RATE, 0);
                 break;
             default:
                 spaceshipSpeed.set(0, 0);
@@ -111,16 +112,16 @@ public class MenuScreen extends Base2DScreen {
     public boolean keyUp(int keycode) {
         switch (keycode) {
             case 19:
-                spaceshipSpeed.sub(0, spaceshipSpeedRate);
+                spaceshipSpeed.sub(0, SPACESHIP_SPEED_RATE);
                 break;
             case 20:
-                spaceshipSpeed.sub(0, -spaceshipSpeedRate);
+                spaceshipSpeed.sub(0, -SPACESHIP_SPEED_RATE);
                 break;
             case 21:
-                spaceshipSpeed.sub(-spaceshipSpeedRate, 0);
+                spaceshipSpeed.sub(-SPACESHIP_SPEED_RATE, 0);
                 break;
             case 22:
-                spaceshipSpeed.sub(spaceshipSpeedRate, 0);
+                spaceshipSpeed.sub(SPACESHIP_SPEED_RATE, 0);
                 break;
             default:
                 spaceshipSpeed.set(0, 0);
@@ -138,7 +139,7 @@ public class MenuScreen extends Base2DScreen {
     public boolean touchDown(Vector2 touch, int pointer) {
         System.out.println(MenuScreen.class.getSimpleName() + "touchUp touch.x = " + touch.x + " touch.y = " + touch.y);
         this.newSpaceshipPosition = touch;
-        spaceshipSpeed.set(touch.cpy().sub(spaceshipPosition).scl(0.01f));
+        spaceshipSpeed.set(touch.cpy().sub(spaceshipPosition).nor());
         isTouch = true;
         return false;
     }
