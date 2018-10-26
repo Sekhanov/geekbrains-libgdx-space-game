@@ -11,7 +11,7 @@ import ru.skhanov.base.Base2DScreen;
 
 public class MenuScreen extends Base2DScreen {
 
-    private SpriteBatch batch;
+//    private SpriteBatch batch;
     private Texture img;
     private Texture img2;
     private  Vector2 spaceshipPosition;
@@ -19,17 +19,20 @@ public class MenuScreen extends Base2DScreen {
     private Vector2 buffer;
     private boolean isTouch;
     private Vector2 spaceshipSpeed;
+    float spaceshipHalfWidth = 0.1f;
+    float spaceshipSpeedRate = 0.01f;
 
     @Override
     public void show() {
-        batch = new SpriteBatch();
+        super.show();
+//        batch = new SpriteBatch();
         img = new Texture("pixelSpace.jpg");
         img2 = new Texture("pixelSpaceShip.png");
-        spaceshipPosition = new Vector2(200, 0);
-        newSpaceshipPosition = new Vector2(200, 0);
+        spaceshipPosition = new Vector2(-0, -0.5f);
+        newSpaceshipPosition = new Vector2(0, 0);
         spaceshipSpeed = new Vector2(0, 0);
         buffer = new Vector2(0, 0);
-        Gdx.input.setInputProcessor(this);
+
 
     }
 
@@ -37,9 +40,10 @@ public class MenuScreen extends Base2DScreen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0.01f,0.16f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         batch.begin();
-        batch.draw(img, 0, 0);
-        batch.draw(img2, spaceshipPosition.x, spaceshipPosition.y);
+        batch.draw(img, -0.5f, -0.5f, 1f, 1f);
+        batch.draw(img2, spaceshipPosition.x - spaceshipHalfWidth, spaceshipPosition.y, 0.2f, 0.2f);
         batch.end();
 
 
@@ -77,7 +81,7 @@ public class MenuScreen extends Base2DScreen {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         newSpaceshipPosition = new Vector2(screenX, reverseCoordinate(screenY));
-        spaceshipSpeed = newSpaceshipPosition.cpy().sub(spaceshipPosition).nor();
+        spaceshipSpeed = newSpaceshipPosition.cpy().sub(spaceshipPosition).setLength(0.01f);
         isTouch = true;
         return super.touchDown(screenX, screenY, pointer, button);
     }
@@ -86,16 +90,16 @@ public class MenuScreen extends Base2DScreen {
     public boolean keyDown(int keycode) {
         switch (keycode) {
             case 19:
-                spaceshipSpeed.add(0, 1);
+                spaceshipSpeed.add(0, spaceshipSpeedRate);
                 break;
             case 20:
-                spaceshipSpeed.add(0, -1);
+                spaceshipSpeed.add(0, -spaceshipSpeedRate);
                 break;
             case 21:
-                spaceshipSpeed.add(-1, 0);
+                spaceshipSpeed.add(-spaceshipSpeedRate, 0);
                 break;
             case 22:
-                spaceshipSpeed.add(1, 0);
+                spaceshipSpeed.add(spaceshipSpeedRate, 0);
                 break;
             default:
                 spaceshipSpeed.set(0, 0);
@@ -107,16 +111,16 @@ public class MenuScreen extends Base2DScreen {
     public boolean keyUp(int keycode) {
         switch (keycode) {
             case 19:
-                spaceshipSpeed.sub(0, 1);
+                spaceshipSpeed.sub(0, spaceshipSpeedRate);
                 break;
             case 20:
-                spaceshipSpeed.sub(0, -1);
+                spaceshipSpeed.sub(0, -spaceshipSpeedRate);
                 break;
             case 21:
-                spaceshipSpeed.sub(-1, 0);
+                spaceshipSpeed.sub(-spaceshipSpeedRate, 0);
                 break;
             case 22:
-                spaceshipSpeed.sub(1, 0);
+                spaceshipSpeed.sub(spaceshipSpeedRate, 0);
                 break;
             default:
                 spaceshipSpeed.set(0, 0);
