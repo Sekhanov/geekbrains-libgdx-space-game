@@ -14,10 +14,10 @@ public class MenuScreen extends Base2DScreen {
     private SpriteBatch batch;
     private Texture img;
     private Texture img2;
-    private TextureRegion imgReg;
     private  Vector2 spaceshipPosition;
     private Vector2 newSpaceshipPosition;
-    private int moveDistance;
+    private Vector2 buffer;
+    private boolean isTouch;
     private Vector2 spaceshipSpeed;
 
     @Override
@@ -25,10 +25,10 @@ public class MenuScreen extends Base2DScreen {
         batch = new SpriteBatch();
         img = new Texture("pixelSpace.jpg");
         img2 = new Texture("pixelSpaceShip.png");
-//        imgReg = new TextureRegion(img2, 50, 50, 50 ,50);
         spaceshipPosition = new Vector2(200, 0);
         newSpaceshipPosition = new Vector2(200, 0);
         spaceshipSpeed = new Vector2(0, 0);
+        buffer = new Vector2(0, 0);
         Gdx.input.setInputProcessor(this);
 
     }
@@ -42,25 +42,29 @@ public class MenuScreen extends Base2DScreen {
         batch.draw(img2, spaceshipPosition.x, spaceshipPosition.y);
         batch.end();
 
+
+
         moveSpaceshipOnTouch();
         moveSpaceshipOnKey();
     }
 
-    private void moveSpaceshipOnKey() {
-        spaceshipPosition.add(spaceshipSpeed);
+    private void moveSpaceshipOnTouch() {
+        if(isTouch) {
+            buffer.set(newSpaceshipPosition);
+            if(buffer.sub(spaceshipPosition).len() > spaceshipSpeed.len()) {
+                spaceshipPosition.add(spaceshipSpeed);
+            } else {
+                spaceshipPosition.set(newSpaceshipPosition);
+                spaceshipSpeed.set(0, 0);
+                isTouch = false;
+            }
+        }
     }
 
-    private void moveSpaceshipOnTouch() {
-        if(moveDistance > 0) {
-               spaceshipPosition.add(spaceshipSpeed);
-               moveDistance--;
-               if(moveDistance <= 0) {
-                   spaceshipSpeed.set(0, 0);
-               }
+    private void moveSpaceshipOnKey() {
+        if(!isTouch) {
+        spaceshipPosition.add(spaceshipSpeed);
         }
-
-
-
     }
 
     @Override
@@ -73,9 +77,8 @@ public class MenuScreen extends Base2DScreen {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         newSpaceshipPosition = new Vector2(screenX, reverseCoordinate(screenY));
-        moveDistance = (int) newSpaceshipPosition.cpy().sub(spaceshipPosition).len();
         spaceshipSpeed = newSpaceshipPosition.cpy().sub(spaceshipPosition).nor();
-
+        isTouch = true;
         return super.touchDown(screenX, screenY, pointer, button);
     }
 
