@@ -34,6 +34,7 @@ public class Base2DScreen implements Screen, InputProcessor {
         this.glBounds = new Rect(0, 0, 1f, 1f);
         this.worldToGl = new Matrix4();
         this.screenToWorld = new Matrix3();
+        this.touch = new Vector2();
 
     }
 
@@ -102,16 +103,31 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        System.out.println("touchDown x:" + screenX + "y:" + screenY );
+        System.out.println(Base2DScreen.class.getSimpleName() + "touchDown x:" + screenX + "y:" + screenY );
         touch.set(screenX, screenBounds.getHeight() - screenY).mul(screenToWorld);
+        touchDown(touch, pointer);
         return false;
     }
 
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        System.out.println("touchDown x:" + screenX + "y:" + screenY );
+    public boolean touchDown(Vector2 touch, int pointer) {
+        System.out.println(Base2DScreen.class.getSimpleName() +"touchDown touch.x = " + touch.x + " touch.y = " + touch.y);
         return false;
     }
+
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        System.out.println(Base2DScreen.class.getSimpleName()  + "touchDown x:" + screenX + "y:" + screenY );
+        touch.set(screenX, screenBounds.getHeight() - screenY).mul(screenToWorld);
+        touchUp(touch, pointer);
+        return false;
+    }
+
+    public boolean touchUp(Vector2 touch, int pointer) {
+        System.out.println(Base2DScreen.class.getSimpleName() + "touchUp touch.x = " + touch.x + " touch.y = " + touch.y);
+        return false;
+    }
+
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {

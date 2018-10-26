@@ -20,7 +20,7 @@ public class MenuScreen extends Base2DScreen {
     private boolean isTouch;
     private Vector2 spaceshipSpeed;
     float spaceshipHalfWidth = 0.1f;
-    float spaceshipSpeedRate = 0.01f;
+    float spaceshipSpeedRate = 0.005f;
 
     @Override
     public void show() {
@@ -78,13 +78,13 @@ public class MenuScreen extends Base2DScreen {
         img2.dispose();
     }
 
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        newSpaceshipPosition = new Vector2(screenX, reverseCoordinate(screenY));
-        spaceshipSpeed = newSpaceshipPosition.cpy().sub(spaceshipPosition).setLength(0.01f);
-        isTouch = true;
-        return super.touchDown(screenX, screenY, pointer, button);
-    }
+//    @Override
+//    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+//        newSpaceshipPosition = new Vector2(screenX, reverseCoordinate(screenY));
+//        spaceshipSpeed = newSpaceshipPosition.cpy().sub(spaceshipPosition).setLength(0.01f);
+//        isTouch = true;
+//        return super.touchDown(screenX, screenY, pointer, button);
+//    }
 
     @Override
     public boolean keyDown(int keycode) {
@@ -128,7 +128,21 @@ public class MenuScreen extends Base2DScreen {
         return super.keyUp(keycode);
     }
 
+
+
     private int reverseCoordinate(int point) {
         return Math.abs(point - Gdx.graphics.getHeight());
     }
+
+    @Override
+    public boolean touchDown(Vector2 touch, int pointer) {
+        System.out.println(MenuScreen.class.getSimpleName() + "touchUp touch.x = " + touch.x + " touch.y = " + touch.y);
+        this.newSpaceshipPosition = touch;
+        spaceshipSpeed.set(touch.cpy().sub(spaceshipPosition).scl(0.01f));
+        isTouch = true;
+        return false;
+    }
 }
+
+
+
