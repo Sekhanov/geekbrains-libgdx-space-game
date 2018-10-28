@@ -10,6 +10,8 @@ import com.badlogic.gdx.math.Vector2;
 import ru.skhanov.base.Base2DScreen;
 import ru.skhanov.math.Rect;
 import ru.skhanov.sprite.Background;
+import ru.skhanov.sprite.Exit;
+import ru.skhanov.sprite.Play;
 import ru.skhanov.sprite.Star;
 
 public class MenuScreen extends Base2DScreen {
@@ -20,6 +22,8 @@ public class MenuScreen extends Base2DScreen {
     private Texture bgTexture;
     private TextureAtlas textureAtlas;
     private Star[] stars;
+    private Play play;
+    private Exit exit;
 
     @Override
     public void show() {
@@ -31,6 +35,8 @@ public class MenuScreen extends Base2DScreen {
         for(int i = 0; i < stars.length; i++) {
             stars[i] = new Star(textureAtlas);
         }
+        play = new Play(textureAtlas);
+        exit = new Exit(textureAtlas);
 
     }
 
@@ -40,6 +46,7 @@ public class MenuScreen extends Base2DScreen {
         for(int i = 0; i < stars.length; i++) {
             stars[i].resize(worldBounds);
         }
+        exit.resize(worldBounds);
 
     }
 
@@ -59,6 +66,8 @@ public class MenuScreen extends Base2DScreen {
         for(int i = 0; i < stars.length; i++) {
             stars[i].draw(batch);
         }
+        play.draw(batch);
+        exit.draw(batch);
         batch.end();
     }
 
@@ -78,6 +87,15 @@ public class MenuScreen extends Base2DScreen {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
+        play.touchDown(touch, pointer);
+        exit.touchDown(touch, pointer);
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(Vector2 touch, int pointer) {
+        play.touchUp(touch, pointer);
+        exit.touchUp(touch, pointer);
         return false;
     }
 }
