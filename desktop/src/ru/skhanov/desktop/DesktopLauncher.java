@@ -8,8 +8,10 @@ import ru.skhanov.Start2DGame;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.width = 512;
-		config.height =  512;
+		float aspect = 3f / 4f;
+		config.height = 500;
+		config.width = (int) (config.height * aspect);
+		config.resizable = false;
 		new LwjglApplication(new Start2DGame(), config);
 	}
 }
