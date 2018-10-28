@@ -1,5 +1,6 @@
 package ru.skhanov.sprite;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
@@ -30,6 +31,9 @@ public class Exit extends Sprite {
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
         scale = 1f;
+        if(isMe(touch)) {
+        Gdx.app.exit();
+        }
         return false;
     }
 }
