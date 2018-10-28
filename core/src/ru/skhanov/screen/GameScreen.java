@@ -2,13 +2,13 @@ package ru.skhanov.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-import ru.skhanov.Start2DGame;
 import ru.skhanov.base.Base2DScreen;
 import ru.skhanov.math.Rect;
 import ru.skhanov.sprite.Background;
@@ -16,22 +16,15 @@ import ru.skhanov.sprite.Exit;
 import ru.skhanov.sprite.Play;
 import ru.skhanov.sprite.Star;
 
-public class MenuScreen extends Base2DScreen {
+public class GameScreen extends Base2DScreen {
 
     private static final int STAR_COUNT = 256;
-    private final Game myLibGdxGame;
-
     private Background background;
     private Texture bgTexture;
     private TextureAtlas textureAtlas;
     private Star[] stars;
-    private Play play;
     private Exit exit;
 
-    public MenuScreen(Game game) {
-        super();
-        this.myLibGdxGame = game;
-    }
 
     @Override
     public void show() {
@@ -43,7 +36,7 @@ public class MenuScreen extends Base2DScreen {
         for(int i = 0; i < stars.length; i++) {
             stars[i] = new Star(textureAtlas);
         }
-        play = new Play(textureAtlas);
+
         exit = new Exit(textureAtlas);
 
     }
@@ -74,7 +67,6 @@ public class MenuScreen extends Base2DScreen {
         for(int i = 0; i < stars.length; i++) {
             stars[i].draw(batch);
         }
-        play.draw(batch);
         exit.draw(batch);
         batch.end();
     }
@@ -92,20 +84,16 @@ public class MenuScreen extends Base2DScreen {
         batch.dispose();
     }
 
+
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
-        play.touchDown(touch, pointer);
         exit.touchDown(touch, pointer);
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
-        play.touchUp(touch, pointer, myLibGdxGame, this);
         exit.touchUp(touch, pointer);
         return false;
     }
 }
-
-
-
