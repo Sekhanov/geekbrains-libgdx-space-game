@@ -1,7 +1,6 @@
 package ru.skhanov.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -10,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.skhanov.base.Base2DScreen;
 import ru.skhanov.math.Rect;
+import ru.skhanov.pool.BulletPool;
 import ru.skhanov.sprite.Background;
 import ru.skhanov.sprite.Exit;
 import ru.skhanov.sprite.MainShip;
@@ -26,6 +26,8 @@ public class GameScreen extends Base2DScreen {
     private Exit exit;
     private MainShip mainShip;
 
+    private BulletPool bulletPool;
+
 
     @Override
     public void show() {
@@ -38,8 +40,8 @@ public class GameScreen extends Base2DScreen {
         for(int i = 0; i < stars.length; i++) {
             stars[i] = new Star(menuAtlas);
         }
-
-        mainShip = new MainShip(mainAtlas);
+        bulletPool = new BulletPool();
+        mainShip = new MainShip(mainAtlas, bulletPool);
 
         exit = new Exit(menuAtlas);
 
@@ -75,6 +77,7 @@ public class GameScreen extends Base2DScreen {
             stars[i].draw(batch);
         }
         mainShip.draw(batch);
+        bulletPool.drawActiveObjects(batch);
         exit.draw(batch);
         batch.end();
     }
@@ -83,6 +86,7 @@ public class GameScreen extends Base2DScreen {
         for(int i = 0; i < stars.length; i++) {
             stars[i].update(delta);
         }
+        bulletPool.updateActiveObjects(delta);
         mainShip.update(delta);
     }
 
@@ -124,6 +128,6 @@ public class GameScreen extends Base2DScreen {
     }
 
     public void deleteAllDestroyed() {
-
+        bulletPool.freeAllDestroyedActiveObjects();
     }
 }

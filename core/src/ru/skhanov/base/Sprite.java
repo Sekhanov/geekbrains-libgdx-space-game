@@ -12,6 +12,23 @@ public class Sprite extends Rect {
     protected float scale = 1f;
     protected TextureRegion[] regions;
     protected int frame;
+    protected boolean isDestroyed;
+
+    public Sprite() {
+
+    }
+
+    public void destroy() {
+        isDestroyed = true;
+    }
+
+    public void flushDestroy() {
+        isDestroyed = false;
+    }
+
+    public boolean isDestroyed() {
+        return isDestroyed;
+    }
 
     public Sprite(TextureRegion region) {
         if (region == null) {
