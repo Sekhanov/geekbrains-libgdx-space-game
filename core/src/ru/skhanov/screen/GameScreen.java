@@ -1,6 +1,5 @@
 package ru.skhanov.screen;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -8,43 +7,43 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-import ru.skhanov.Start2DGame;
 import ru.skhanov.base.Base2DScreen;
 import ru.skhanov.math.Rect;
+import ru.skhanov.pool.BulletPool;
 import ru.skhanov.sprite.Background;
 import ru.skhanov.sprite.Exit;
-import ru.skhanov.sprite.Play;
+import ru.skhanov.sprite.MainShip;
 import ru.skhanov.sprite.Star;
 
-public class MenuScreen extends Base2DScreen {
+public class GameScreen extends Base2DScreen {
 
     private static final int STAR_COUNT = 256;
-    private final Game myLibGdxGame;
-
     private Background background;
     private Texture bgTexture;
-    private TextureAtlas textureAtlas;
+    private TextureAtlas menuAtlas;
+    private TextureAtlas mainAtlas;
     private Star[] stars;
-    private Play play;
     private Exit exit;
+    private MainShip mainShip;
 
-    public MenuScreen(Game game) {
-        super();
-        this.myLibGdxGame = game;
-    }
+    private BulletPool bulletPool;
+
 
     @Override
     public void show() {
         super.show();
         bgTexture = new Texture("bg.png");
         background = new Background(new TextureRegion(bgTexture));
-        textureAtlas = new TextureAtlas("menuAtlas.tpack");
+        menuAtlas = new TextureAtlas("menuAtlas.tpack");
+        mainAtlas = new TextureAtlas("mainAtlas.tpack");
         stars = new Star[STAR_COUNT];
         for(int i = 0; i < stars.length; i++) {
-            stars[i] = new Star(textureAtlas);
+            stars[i] = new Star(menuAtlas);
         }
-        play = new Play(textureAtlas);
-        exit = new Exit(textureAtlas);
+        bulletPool = new BulletPool();
+        mainShip = new MainShip(mainAtlas, bulletPool);
+
+        exit = new Exit(menuAtlas);
 
     }
 
@@ -54,7 +53,7 @@ public class MenuScreen extends Base2DScreen {
         for(int i = 0; i < stars.length; i++) {
             stars[i].resize(worldBounds);
         }
-
+        mainShip.resize(worldBounds);
         exit.resize(worldBounds);
 
     }
@@ -63,6 +62,8 @@ public class MenuScreen extends Base2DScreen {
     public void render(float delta) {
         super.render(delta);
         update(delta);
+        checkCollision();
+        deleteAllDestroyed();
         draw();
 
     }
@@ -75,7 +76,8 @@ public class MenuScreen extends Base2DScreen {
         for(int i = 0; i < stars.length; i++) {
             stars[i].draw(batch);
         }
-        play.draw(batch);
+        mainShip.draw(batch);
+        bulletPool.drawActiveObjects(batch);
         exit.draw(batch);
         batch.end();
     }
@@ -84,29 +86,48 @@ public class MenuScreen extends Base2DScreen {
         for(int i = 0; i < stars.length; i++) {
             stars[i].update(delta);
         }
+        bulletPool.updateActiveObjects(delta);
+        mainShip.update(delta);
     }
 
     @Override
     public void dispose() {
         bgTexture.dispose();
-        textureAtlas.dispose();
+        menuAtlas.dispose();
+        mainAtlas.dispose();
         batch.dispose();
     }
 
+
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
-        play.touchDown(touch, pointer);
         exit.touchDown(touch, pointer);
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
-        play.touchUp(touch, pointer, myLibGdxGame, this);
         exit.touchUp(touch, pointer);
         return false;
     }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        mainShip.keyDown(keycode);
+        return super.keyDown(keycode);
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        mainShip.keyUp(keycode);
+        return super.keyUp(keycode);
+    }
+
+    public void checkCollision() {
+
+    }
+
+    public void deleteAllDestroyed() {
+        bulletPool.freeAllDestroyedActiveObjects();
+    }
 }
-
-
-
