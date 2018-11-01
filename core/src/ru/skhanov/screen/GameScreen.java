@@ -1,8 +1,7 @@
 package ru.skhanov.screen;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -13,7 +12,7 @@ import ru.skhanov.base.Base2DScreen;
 import ru.skhanov.math.Rect;
 import ru.skhanov.sprite.Background;
 import ru.skhanov.sprite.Exit;
-import ru.skhanov.sprite.Play;
+import ru.skhanov.sprite.MainShip;
 import ru.skhanov.sprite.Star;
 
 public class GameScreen extends Base2DScreen {
@@ -21,9 +20,11 @@ public class GameScreen extends Base2DScreen {
     private static final int STAR_COUNT = 256;
     private Background background;
     private Texture bgTexture;
-    private TextureAtlas textureAtlas;
+    private TextureAtlas menuAtlas;
+    private TextureAtlas mainAtlas;
     private Star[] stars;
     private Exit exit;
+    private MainShip mainShip;
 
 
     @Override
@@ -31,13 +32,16 @@ public class GameScreen extends Base2DScreen {
         super.show();
         bgTexture = new Texture("bg.png");
         background = new Background(new TextureRegion(bgTexture));
-        textureAtlas = new TextureAtlas("menuAtlas.tpack");
+        menuAtlas = new TextureAtlas("menuAtlas.tpack");
+        mainAtlas = new TextureAtlas("mainAtlas.tpack");
         stars = new Star[STAR_COUNT];
         for(int i = 0; i < stars.length; i++) {
-            stars[i] = new Star(textureAtlas);
+            stars[i] = new Star(menuAtlas);
         }
 
-        exit = new Exit(textureAtlas);
+        mainShip = new MainShip(mainAtlas);
+
+        exit = new Exit(menuAtlas);
 
     }
 
@@ -47,6 +51,7 @@ public class GameScreen extends Base2DScreen {
         for(int i = 0; i < stars.length; i++) {
             stars[i].resize(worldBounds);
         }
+        mainShip.resize(worldBounds);
         exit.resize(worldBounds);
 
     }
@@ -55,6 +60,8 @@ public class GameScreen extends Base2DScreen {
     public void render(float delta) {
         super.render(delta);
         update(delta);
+        checkCollision();
+        deleteAllDestroyed();
         draw();
 
     }
@@ -67,6 +74,7 @@ public class GameScreen extends Base2DScreen {
         for(int i = 0; i < stars.length; i++) {
             stars[i].draw(batch);
         }
+        mainShip.draw(batch);
         exit.draw(batch);
         batch.end();
     }
@@ -75,12 +83,14 @@ public class GameScreen extends Base2DScreen {
         for(int i = 0; i < stars.length; i++) {
             stars[i].update(delta);
         }
+        mainShip.update(delta);
     }
 
     @Override
     public void dispose() {
         bgTexture.dispose();
-        textureAtlas.dispose();
+        menuAtlas.dispose();
+        mainAtlas.dispose();
         batch.dispose();
     }
 
@@ -95,5 +105,25 @@ public class GameScreen extends Base2DScreen {
     public boolean touchUp(Vector2 touch, int pointer) {
         exit.touchUp(touch, pointer);
         return false;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        mainShip.keyDown(keycode);
+        return super.keyDown(keycode);
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        mainShip.keyUp(keycode);
+        return super.keyUp(keycode);
+    }
+
+    public void checkCollision() {
+
+    }
+
+    public void deleteAllDestroyed() {
+
     }
 }
