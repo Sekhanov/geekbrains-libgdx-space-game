@@ -38,7 +38,15 @@ public class MainShip extends Sprite {
 
     @Override
     public void update(float delta) {
+        if(getLeft() < worldBounds.getLeft()) {
+            stopMove();
+            setLeft(worldBounds.getLeft());
+        } else if(getRight() > worldBounds.getRight()) {
+            stopMove();
+            setRight(worldBounds.getRight());
+        }
         pos.mulAdd(v, delta);
+
     }
 
     public boolean keyDown(int keycode) {
@@ -108,13 +116,13 @@ public class MainShip extends Sprite {
         bullet.set(this, atlas.findRegion("bulletMainShip"), pos, new Vector2(0, 0.5f), 0.01f, worldBounds, 1);
     }
 
-
-
     public void moveRight() {
-        v.set(v0);
+        System.out.println( "shipRignt:" + getRight() + "/worldRight" + worldBounds.getRight());
+            v.set(v0);
     }
 
     public void moveLeft() {
+        System.out.println( "shipLef:" + getLeft() + "/worldLeft" + worldBounds.getLeft());
         v.set(v0).rotate(180);
     }
 

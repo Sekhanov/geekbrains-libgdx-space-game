@@ -54,7 +54,6 @@ public class GameScreen extends Base2DScreen {
             stars[i].resize(worldBounds);
         }
         mainShip.resize(worldBounds);
-//        exit.resize(worldBounds);
         exit.setTop(worldBounds.getTop());
         exit.setLeft(worldBounds.getLeft());
 

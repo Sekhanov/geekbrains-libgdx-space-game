@@ -80,7 +80,7 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public void dispose() {
-        System.out.println("dispose");
+//        System.out.println("dispose");
         batch.dispose();
     }
 
@@ -89,32 +89,32 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        System.out.println("key down:" + keycode);
+//        System.out.println("key down:" + keycode);
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        System.out.println("key up:" + keycode);
+//        System.out.println("key up:" + keycode);
         return false;
     }
 
     @Override
     public boolean keyTyped(char character) {
-        System.out.println("key taped:" + character);
+//        System.out.println("key taped:" + character);
         return false;
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        System.out.println(Base2DScreen.class.getSimpleName() + "touchDown x:" + screenX + "y:" + screenY );
+//        System.out.println(Base2DScreen.class.getSimpleName() + "touchDown x:" + screenX + "y:" + screenY );
         touch.set(screenX, screenBounds.getHeight() - screenY).mul(screenToWorld);
         touchDown(touch, pointer);
         return false;
     }
 
     public boolean touchDown(Vector2 touch, int pointer) {
-        System.out.println(Base2DScreen.class.getSimpleName() +"touchDown touch.x = " + touch.x + " touch.y = " + touch.y);
+//        System.out.println(Base2DScreen.class.getSimpleName() +"touchDown touch.x = " + touch.x + " touch.y = " + touch.y);
         return false;
     }
 
