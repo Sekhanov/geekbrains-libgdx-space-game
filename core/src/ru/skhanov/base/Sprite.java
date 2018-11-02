@@ -54,6 +54,7 @@ public class Sprite extends Rect {
                 scale, scale, // масштаб по x и y
                 angle // угол вращения
         );
+
     }
 
     public void setHeightProportion(float height) {

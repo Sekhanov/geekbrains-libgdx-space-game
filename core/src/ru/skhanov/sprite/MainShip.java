@@ -1,6 +1,8 @@
 package ru.skhanov.sprite;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
@@ -22,12 +24,15 @@ public class MainShip extends Sprite {
 
     private Rect worldBounds;
 
+    private Sound laserShoot;
+
     public MainShip(TextureAtlas atlas, BulletPool bulletPool) {
         super(atlas.findRegion("main_ship"), 1, 2, 2);
 
         this.atlas = atlas;
         setHeightProportion(0.15f);
         this.bulletPool = bulletPool;
+        laserShoot = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
     }
 
     @Override
@@ -114,6 +119,8 @@ public class MainShip extends Sprite {
     private void shoot() {
         Bullet bullet = bulletPool.obtain();
         bullet.set(this, atlas.findRegion("bulletMainShip"), pos, new Vector2(0, 0.5f), 0.01f, worldBounds, 1);
+        laserShoot.play();
+
     }
 
     public void moveRight() {

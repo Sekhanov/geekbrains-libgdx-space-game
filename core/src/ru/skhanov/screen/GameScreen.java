@@ -1,6 +1,8 @@
 package ru.skhanov.screen;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -27,6 +29,7 @@ public class GameScreen extends Base2DScreen {
     private MainShip mainShip;
 
     private BulletPool bulletPool;
+    private Music music;
 
 
     @Override
@@ -43,6 +46,9 @@ public class GameScreen extends Base2DScreen {
         bulletPool = new BulletPool();
         mainShip = new MainShip(mainAtlas, bulletPool);
         exit = new Button(menuAtlas, "btExit", 0.05f);
+        music = Gdx.audio.newMusic(Gdx.files.internal("B&DDLevel5.mp3"));
+        music.play();
+        music.setLooping(true);
 
 
     }
@@ -77,6 +83,7 @@ public class GameScreen extends Base2DScreen {
         for(int i = 0; i < stars.length; i++) {
             stars[i].draw(batch);
         }
+
         mainShip.draw(batch);
         bulletPool.drawActiveObjects(batch);
         exit.draw(batch);
@@ -97,6 +104,7 @@ public class GameScreen extends Base2DScreen {
         menuAtlas.dispose();
         mainAtlas.dispose();
         batch.dispose();
+        music.dispose();
     }
 
 
