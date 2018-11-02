@@ -16,6 +16,7 @@ import ru.skhanov.math.Rect;
  */
 public class Button extends Sprite {
 
+    private boolean isPressed;
 
 
     public Button(TextureAtlas atlas, String atlasRegionName, float height) {
@@ -27,18 +28,24 @@ public class Button extends Sprite {
     public boolean touchDown(Vector2 touch, int pointer) {
         if(isMe(touch)) {
             scale = 0.9f;
+            isPressed = true;
         }
         return false;
     }
 
 
-    public boolean touchUp(Vector2 touch, int pointer, Runnable action) {
+    public boolean touchUp(Vector2 touch, int pointer, Consumer action) {
         scale = 1f;
         if(isMe(touch)) {
-            action.run();
+            action.accept(this);
+            isPressed = false;
         }
         return false;
     }
+
+
+
+
 
 
 }

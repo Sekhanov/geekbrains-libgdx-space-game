@@ -11,7 +11,7 @@ import ru.skhanov.base.Base2DScreen;
 import ru.skhanov.math.Rect;
 import ru.skhanov.pool.BulletPool;
 import ru.skhanov.sprite.Background;
-import ru.skhanov.sprite.Exit;
+import ru.skhanov.sprite.Button;
 import ru.skhanov.sprite.MainShip;
 import ru.skhanov.sprite.Star;
 
@@ -23,7 +23,7 @@ public class GameScreen extends Base2DScreen {
     private TextureAtlas menuAtlas;
     private TextureAtlas mainAtlas;
     private Star[] stars;
-    private Exit exit;
+    private Button exit;
     private MainShip mainShip;
 
     private BulletPool bulletPool;
@@ -42,8 +42,8 @@ public class GameScreen extends Base2DScreen {
         }
         bulletPool = new BulletPool();
         mainShip = new MainShip(mainAtlas, bulletPool);
+        exit = new Button(menuAtlas, "btExit", 0.05f);
 
-        exit = new Exit(menuAtlas);
 
     }
 
@@ -54,7 +54,9 @@ public class GameScreen extends Base2DScreen {
             stars[i].resize(worldBounds);
         }
         mainShip.resize(worldBounds);
-        exit.resize(worldBounds);
+//        exit.resize(worldBounds);
+        exit.setTop(worldBounds.getTop());
+        exit.setLeft(worldBounds.getLeft());
 
     }
 
@@ -101,13 +103,15 @@ public class GameScreen extends Base2DScreen {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
+        mainShip.touchDown(touch, pointer);
         exit.touchDown(touch, pointer);
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
-        exit.touchUp(touch, pointer);
+        mainShip.touchUp(touch, pointer);
+        exit.touchUp(touch, pointer, t -> Gdx.app.exit());
         return false;
     }
 

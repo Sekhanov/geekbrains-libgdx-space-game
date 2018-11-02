@@ -87,10 +87,28 @@ public class MainShip extends Sprite {
         return false;
     }
 
+    @Override
+    public boolean touchDown(Vector2 touch, int pointer) {
+        if(touch.x < 0) {
+            moveLeft();
+        } else {
+            moveRight();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(Vector2 touch, int pointer) {
+        stopMove();
+        return false;
+    }
+
     private void shoot() {
         Bullet bullet = bulletPool.obtain();
         bullet.set(this, atlas.findRegion("bulletMainShip"), pos, new Vector2(0, 0.5f), 0.01f, worldBounds, 1);
     }
+
+
 
     public void moveRight() {
         v.set(v0);
