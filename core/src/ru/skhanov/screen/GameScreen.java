@@ -1,6 +1,5 @@
 package ru.skhanov.screen;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
@@ -12,14 +11,18 @@ import com.badlogic.gdx.math.Vector2;
 import ru.skhanov.base.Base2DScreen;
 import ru.skhanov.math.Rect;
 import ru.skhanov.pool.BulletPool;
+import ru.skhanov.pool.EnemyShipPool;
 import ru.skhanov.sprite.Background;
 import ru.skhanov.sprite.Button;
+import ru.skhanov.sprite.EnemyShip;
 import ru.skhanov.sprite.MainShip;
 import ru.skhanov.sprite.Star;
 
 public class GameScreen extends Base2DScreen {
 
     private static final int STAR_COUNT = 256;
+
+    private Rect worldBounds;
     private Background background;
     private Texture bgTexture;
     private TextureAtlas menuAtlas;
@@ -28,7 +31,10 @@ public class GameScreen extends Base2DScreen {
     private Button exit;
     private MainShip mainShip;
 
+    private float spawnEnemyTime;
+
     private BulletPool bulletPool;
+    private EnemyShipPool enemyShipPool;
     private Music music;
 
 
@@ -46,8 +52,10 @@ public class GameScreen extends Base2DScreen {
         bulletPool = new BulletPool();
         mainShip = new MainShip(mainAtlas, bulletPool);
         exit = new Button(menuAtlas, "btExit", 0.05f);
+        enemyShipPool = new EnemyShipPool();
+
         music = Gdx.audio.newMusic(Gdx.files.internal("B&DDLevel5.mp3"));
-        music.play();
+//        music.play();
         music.setLooping(true);
 
 
@@ -55,6 +63,7 @@ public class GameScreen extends Base2DScreen {
 
     @Override
     public void resize(Rect worldBounds) {
+        this.worldBounds = worldBounds;
         background.resize(worldBounds);
         for(int i = 0; i < stars.length; i++) {
             stars[i].resize(worldBounds);
@@ -69,6 +78,7 @@ public class GameScreen extends Base2DScreen {
     public void render(float delta) {
         super.render(delta);
         update(delta);
+        generateEnemyShip(delta);
         checkCollision();
         deleteAllDestroyed();
         draw();
@@ -86,6 +96,7 @@ public class GameScreen extends Base2DScreen {
 
         mainShip.draw(batch);
         bulletPool.drawActiveObjects(batch);
+        enemyShipPool.drawActiveObjects(batch);
         exit.draw(batch);
         batch.end();
     }
@@ -95,7 +106,19 @@ public class GameScreen extends Base2DScreen {
             stars[i].update(delta);
         }
         bulletPool.updateActiveObjects(delta);
+        enemyShipPool.updateActiveObjects(delta);
         mainShip.update(delta);
+    }
+
+    public void generateEnemyShip(float delta) {
+        System.out.println("spawnEnemyTime = " + spawnEnemyTime);
+        if(spawnEnemyTime > 5) {
+            EnemyShip enemyShip = enemyShipPool.obtain();
+            enemyShip.set(mainAtlas.findRegion("enemy0"), 0.1f, new Vector2(0, worldBounds.getTop()), new Vector2(0, -0.1f), worldBounds);
+            spawnEnemyTime = 0;
+        } else {
+            spawnEnemyTime += delta;
+        }
     }
 
     @Override
@@ -141,4 +164,6 @@ public class GameScreen extends Base2DScreen {
     public void deleteAllDestroyed() {
         bulletPool.freeAllDestroyedActiveObjects();
     }
+
+
 }

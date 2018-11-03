@@ -9,9 +9,9 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		float aspect = 3f / 4f;
-		config.height = 500;
+		config.height = 1024;
 		config.width = (int) (config.height * aspect);
-		config.resizable = false;
+//		config.resizable = false;
 		new LwjglApplication(new Start2DGame(), config);
 	}
 }
