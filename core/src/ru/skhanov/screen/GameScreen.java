@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.skhanov.base.Base2DScreen;
 import ru.skhanov.math.Rect;
+import ru.skhanov.math.Rnd;
 import ru.skhanov.pool.BulletPool;
 import ru.skhanov.pool.EnemyShipPool;
 import ru.skhanov.sprite.Background;
@@ -55,7 +56,7 @@ public class GameScreen extends Base2DScreen {
         enemyShipPool = new EnemyShipPool();
 
         music = Gdx.audio.newMusic(Gdx.files.internal("B&DDLevel5.mp3"));
-//        music.play();
+        music.play();
         music.setLooping(true);
 
 
@@ -85,7 +86,7 @@ public class GameScreen extends Base2DScreen {
 
     }
 
-    public void draw() {
+    private void draw() {
         Gdx.gl.glClearColor(0.01f,0.16f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
@@ -101,7 +102,7 @@ public class GameScreen extends Base2DScreen {
         batch.end();
     }
 
-    public void update(float delta) {
+    private void update(float delta) {
         for(int i = 0; i < stars.length; i++) {
             stars[i].update(delta);
         }
@@ -110,11 +111,12 @@ public class GameScreen extends Base2DScreen {
         mainShip.update(delta);
     }
 
-    public void generateEnemyShip(float delta) {
-        System.out.println("spawnEnemyTime = " + spawnEnemyTime);
-        if(spawnEnemyTime > 5) {
+    private void generateEnemyShip(float delta) {
+//        System.out.println("spawnEnemyTime = " + spawnEnemyTime);
+        if(spawnEnemyTime > 3) {
             EnemyShip enemyShip = enemyShipPool.obtain();
-            enemyShip.set(mainAtlas.findRegion("enemy0"), 0.1f, new Vector2(0, worldBounds.getTop()), new Vector2(0, -0.1f), worldBounds);
+            enemyShip.set(mainAtlas.findRegion("enemy0"), 0.1f, new Vector2(Rnd.nextFloat(worldBounds.getLeft(), worldBounds.getRight()),
+                    worldBounds.getTop()), new Vector2(0, -0.1f), worldBounds);
             spawnEnemyTime = 0;
         } else {
             spawnEnemyTime += delta;
@@ -157,12 +159,13 @@ public class GameScreen extends Base2DScreen {
         return super.keyUp(keycode);
     }
 
-    public void checkCollision() {
+    private void checkCollision() {
 
     }
 
-    public void deleteAllDestroyed() {
+    private void deleteAllDestroyed() {
         bulletPool.freeAllDestroyedActiveObjects();
+        enemyShipPool.freeAllDestroyedActiveObjects();
     }
 
 
