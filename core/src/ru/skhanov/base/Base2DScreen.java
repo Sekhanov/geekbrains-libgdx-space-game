@@ -16,11 +16,11 @@ public class Base2DScreen implements Screen, InputProcessor {
     protected SpriteBatch batch;
 
     private Rect screenBounds; //границы области рисования в пикселях
-    private Rect worldBounds; // границы проекции наших мировых координат
+    protected Rect worldBounds; // границы проекции наших мировых координат
     private Rect glBounds; // границы проэкции OpenGL координат
 
-    protected Matrix4 worldToGl;
-    protected Matrix3 screenToWorld;
+    private Matrix4 worldToGl;
+    private Matrix3 screenToWorld;
 
     private Vector2 touch;
 

@@ -19,12 +19,12 @@ import ru.skhanov.sprite.Button;
 import ru.skhanov.sprite.EnemyShip;
 import ru.skhanov.sprite.MainShip;
 import ru.skhanov.sprite.Star;
+import ru.skhanov.utils.EnemyEmmiter;
 
 public class GameScreen extends Base2DScreen {
 
     private static final int STAR_COUNT = 256;
 
-    private Rect worldBounds;
     private Background background;
     private Texture bgTexture;
     private TextureAtlas menuAtlas;
@@ -32,11 +32,11 @@ public class GameScreen extends Base2DScreen {
     private Star[] stars;
     private Button exit;
     private MainShip mainShip;
-    private float spawnEnemyTime;
     private BulletPool bulletPool;
     private EnemyShipPool enemyShipPool;
     private Music music;
     private Sound shootSound;
+    private EnemyEmmiter enemyEmmiter;
 
 
 
@@ -57,6 +57,7 @@ public class GameScreen extends Base2DScreen {
         mainShip = new MainShip(mainAtlas.findRegion("main_ship"), mainAtlas.findRegion("bulletMainShip"), bulletPool, shootSound);
         exit = new Button(menuAtlas, "btExit", 0.05f);
         enemyShipPool = new EnemyShipPool(shootSound, bulletPool);
+        enemyEmmiter = new EnemyEmmiter(enemyShipPool, worldBounds, mainAtlas);
 
         music = Gdx.audio.newMusic(Gdx.files.internal("B&DDLevel5.mp3"));
 //        music.play();
@@ -83,7 +84,7 @@ public class GameScreen extends Base2DScreen {
     public void render(float delta) {
         super.render(delta);
         update(delta);
-        generateEnemyShip(delta);
+        enemyEmmiter.generate(delta);
         checkCollision();
         deleteAllDestroyed();
         draw();
@@ -113,18 +114,6 @@ public class GameScreen extends Base2DScreen {
         bulletPool.updateActiveObjects(delta);
         enemyShipPool.updateActiveObjects(delta);
         mainShip.update(delta);
-    }
-
-    private void generateEnemyShip(float delta) {
-        if(spawnEnemyTime > 5) {
-            EnemyShip enemyShip = enemyShipPool.obtain();
-            enemyShip.set(mainAtlas.findRegion("enemy0"),
-                    mainAtlas.findRegion("bulletEnemy"),
-                    0.3f, -0.1f, -0.2f, worldBounds, 2f,0.01f);
-            spawnEnemyTime = 0;
-        } else {
-            spawnEnemyTime += delta;
-        }
     }
 
     @Override

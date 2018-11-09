@@ -14,7 +14,7 @@ public class EnemyShip extends Ship {
 
     private float reloadInterval;
     private float reloadTimer;
-    private Vector2 acceleration = new Vector2(0, 0.5f);
+    private Vector2 acceleration = new Vector2(0, -0.5f);
 
 
     public EnemyShip(Sound shootSound, BulletPool bulletPool) {
@@ -42,7 +42,11 @@ public class EnemyShip extends Ship {
 
     @Override
     public void update(float delta) {
-        pos.mulAdd(v, delta);
+        if(getTop() > worldBounds.getTop()) {
+        pos.mulAdd(acceleration, delta);
+        } else  {
+            pos.mulAdd(v, delta);
+        }
 
         enemyShoot(delta);
         if(getTop() < worldBounds.getBottom()) {
