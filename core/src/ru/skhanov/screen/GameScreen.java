@@ -60,7 +60,7 @@ public class GameScreen extends Base2DScreen {
         enemyEmmiter = new EnemyEmmiter(enemyShipPool, worldBounds, mainAtlas);
 
         music = Gdx.audio.newMusic(Gdx.files.internal("B&DDLevel5.mp3"));
-//        music.play();
+        music.play();
         music.setLooping(true);
 
 

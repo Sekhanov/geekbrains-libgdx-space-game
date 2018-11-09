@@ -33,10 +33,14 @@ public class EnemyEmmiter {
                 enemyShip.set(textureAtlas.findRegion("enemy0"),
                         textureAtlas.findRegion("bulletEnemy"),
                         0.1f, -0.1f, -0.2f, worldBounds, 3f,0.01f);
-            } if(random > 0.6) {
+            } else if(random > 0.6 && random < 0.8) {
                 enemyShip.set(textureAtlas.findRegion("enemy1"),textureAtlas.findRegion("bulletEnemy"),
                         0.2f, -0.05f, -0.2f, worldBounds, 5f, 0.05f);
+            } else if (random > 0.8) {
+                enemyShip.set(textureAtlas.findRegion("enemy2"),textureAtlas.findRegion("bulletEnemy"),
+                        0.3f, -0.02f, -0.2f, worldBounds, 5f, 0.08f);
             }
+
         }
     }
 
