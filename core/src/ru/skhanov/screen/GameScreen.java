@@ -2,6 +2,7 @@ package ru.skhanov.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -31,14 +32,13 @@ public class GameScreen extends Base2DScreen {
     private Star[] stars;
     private Button exit;
     private MainShip mainShip;
-
-    private float spawnEnemy0Time;
-    private float spawnEnemy1Time;
-
+    private float spawnEnemyTime;
     private BulletPool bulletPool;
-    private EnemyShipPool enemyShipPool0;
-    private EnemyShipPool enemyShipPool1;
+    private EnemyShipPool enemyShipPool;
     private Music music;
+    private Sound shootSound;
+
+
 
 
     @Override
@@ -53,14 +53,13 @@ public class GameScreen extends Base2DScreen {
             stars[i] = new Star(menuAtlas);
         }
         bulletPool = new BulletPool();
-        mainShip = new MainShip(mainAtlas, bulletPool);
+        shootSound = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
+        mainShip = new MainShip(mainAtlas.findRegion("main_ship"), mainAtlas.findRegion("bulletMainShip"), bulletPool, shootSound);
         exit = new Button(menuAtlas, "btExit", 0.05f);
-        enemyShipPool0 = new EnemyShipPool();
-        enemyShipPool1 = new EnemyShipPool();
-
+        enemyShipPool = new EnemyShipPool(shootSound, bulletPool);
 
         music = Gdx.audio.newMusic(Gdx.files.internal("B&DDLevel5.mp3"));
-        music.play();
+//        music.play();
         music.setLooping(true);
 
 
@@ -74,6 +73,7 @@ public class GameScreen extends Base2DScreen {
             stars[i].resize(worldBounds);
         }
         mainShip.resize(worldBounds);
+
         exit.setTop(worldBounds.getTop());
         exit.setLeft(worldBounds.getLeft());
 
@@ -83,8 +83,7 @@ public class GameScreen extends Base2DScreen {
     public void render(float delta) {
         super.render(delta);
         update(delta);
-        generateEnemyShip0(delta);
-        generateEnemyShip1(delta);
+        generateEnemyShip(delta);
         checkCollision();
         deleteAllDestroyed();
         draw();
@@ -102,9 +101,7 @@ public class GameScreen extends Base2DScreen {
 
         mainShip.draw(batch);
         bulletPool.drawActiveObjects(batch);
-        enemyShipPool0.drawActiveObjects(batch);
-        enemyShipPool1.drawActiveObjects(batch);
-
+        enemyShipPool.drawActiveObjects(batch);
         exit.draw(batch);
         batch.end();
     }
@@ -114,31 +111,19 @@ public class GameScreen extends Base2DScreen {
             stars[i].update(delta);
         }
         bulletPool.updateActiveObjects(delta);
-        enemyShipPool0.updateActiveObjects(delta);
-        enemyShipPool1.updateActiveObjects(delta);
-
+        enemyShipPool.updateActiveObjects(delta);
         mainShip.update(delta);
     }
 
-    private void generateEnemyShip0(float delta) {
-        if(spawnEnemy0Time > 3) {
-            EnemyShip enemyShip = enemyShipPool0.obtain();
-            enemyShip.set(mainAtlas.findRegion("enemy0"), 0.1f, new Vector2(Rnd.nextFloat(worldBounds.getLeft(), worldBounds.getRight()),
-                    worldBounds.getTop()), new Vector2(0, -0.2f), worldBounds);
-            spawnEnemy0Time = 0;
+    private void generateEnemyShip(float delta) {
+        if(spawnEnemyTime > 5) {
+            EnemyShip enemyShip = enemyShipPool.obtain();
+            enemyShip.set(mainAtlas.findRegion("enemy0"),
+                    mainAtlas.findRegion("bulletEnemy"),
+                    0.3f, -0.1f, -0.2f, worldBounds, 2f,0.01f);
+            spawnEnemyTime = 0;
         } else {
-            spawnEnemy0Time += delta;
-        }
-    }
-
-    private void generateEnemyShip1(float delta) {
-        if(spawnEnemy1Time > 8) {
-            EnemyShip enemyShip = enemyShipPool1.obtain();
-            enemyShip.set(mainAtlas.findRegion("enemy0"), 0.2f, new Vector2(Rnd.nextFloat(worldBounds.getLeft(), worldBounds.getRight()),
-                    worldBounds.getTop()), new Vector2(0, -0.1f), worldBounds);
-            spawnEnemy1Time = 0;
-        } else {
-            spawnEnemy1Time += delta;
+            spawnEnemyTime += delta;
         }
     }
 
@@ -184,7 +169,7 @@ public class GameScreen extends Base2DScreen {
 
     private void deleteAllDestroyed() {
         bulletPool.freeAllDestroyedActiveObjects();
-        enemyShipPool0.freeAllDestroyedActiveObjects();
+        enemyShipPool.freeAllDestroyedActiveObjects();
     }
 
 

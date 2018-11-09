@@ -4,45 +4,48 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.skhanov.base.Sprite;
 import ru.skhanov.math.Rect;
 import ru.skhanov.pool.BulletPool;
 
-public class MainShip extends Sprite {
+public class MainShip extends Ship {
+
+
+    private static final Vector2 MAIN_SHIP_BULLET_V = new Vector2(0, 0.3f);
+    private static final float MAIN_SHIP_BULLET_HEIGHT = 0.01f;
 
     private Vector2 v0 = new Vector2(0.5f, 0);
-    private Vector2 v = new Vector2();
 
 
     private boolean pressedLeft;
     private boolean pressedRight;
 
-    private BulletPool bulletPool;
-    private TextureAtlas atlas;
 
-    private Rect worldBounds;
 
-    private Sound laserShoot;
-
-    public MainShip(TextureAtlas atlas, BulletPool bulletPool) {
-        super(atlas.findRegion("main_ship"), 1, 2, 2);
-
-        this.atlas = atlas;
+    public MainShip(TextureRegion regions, TextureRegion bulletRegion, BulletPool bulletPool, Sound shootSound) {
+        super(regions, bulletPool, shootSound);
         setHeightProportion(0.15f);
         this.bulletPool = bulletPool;
-        laserShoot = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
+        this.bulletRegion = bulletRegion;
     }
 
     @Override
     public void resize(Rect worldBounds) {
-        this.worldBounds = worldBounds;
-        setBottom(worldBounds.getBottom() + 0.05f);
+        super.resize(worldBounds);
+        setBottom(worldBounds.getBottom());
     }
 
     @Override
     public void update(float delta) {
+        reachWorldBoundsCheck();
+        pos.mulAdd(v, delta);
+
+    }
+
+    private void reachWorldBoundsCheck() {
         if(getLeft() < worldBounds.getLeft()) {
             stopMove();
             setLeft(worldBounds.getLeft());
@@ -50,8 +53,6 @@ public class MainShip extends Sprite {
             stopMove();
             setRight(worldBounds.getRight());
         }
-        pos.mulAdd(v, delta);
-
     }
 
     public boolean keyDown(int keycode) {
@@ -68,7 +69,7 @@ public class MainShip extends Sprite {
                 break;
             case Input.Keys.UP:
             case Input.Keys.SPACE:
-                shoot();
+                shoot(bulletRegion, MAIN_SHIP_BULLET_V, MAIN_SHIP_BULLET_HEIGHT, damage);
                 break;
         }
         return false;
@@ -116,12 +117,7 @@ public class MainShip extends Sprite {
         return false;
     }
 
-    private void shoot() {
-        Bullet bullet = bulletPool.obtain();
-        bullet.set(this, atlas.findRegion("bulletMainShip"), pos, new Vector2(0, 0.5f), 0.01f, worldBounds, 1);
-        laserShoot.play();
 
-    }
 
     public void moveRight() {
         System.out.println( "shipRignt:" + getRight() + "/worldRight" + worldBounds.getRight());

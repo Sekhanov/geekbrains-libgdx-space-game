@@ -15,7 +15,6 @@ public class Sprite extends Rect {
     protected boolean isDestroyed;
 
     public Sprite() {
-
     }
 
     public void destroy() {
