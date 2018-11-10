@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.List;
+
 import ru.skhanov.base.Base2DScreen;
 import ru.skhanov.math.Rect;
 import ru.skhanov.math.Rnd;
@@ -16,6 +18,7 @@ import ru.skhanov.pool.BulletPool;
 import ru.skhanov.pool.EnemyShipPool;
 import ru.skhanov.pool.ExplosionPool;
 import ru.skhanov.sprite.Background;
+import ru.skhanov.sprite.Bullet;
 import ru.skhanov.sprite.Button;
 import ru.skhanov.sprite.EnemyShip;
 import ru.skhanov.sprite.MainShip;
@@ -54,9 +57,10 @@ public class GameScreen extends Base2DScreen {
         }
         bulletPool = new BulletPool();
         shootSound = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
-        mainShip = new MainShip(mainAtlas.findRegion("main_ship"), mainAtlas.findRegion("bulletMainShip"), bulletPool, shootSound);
+        mainShip = new MainShip(mainAtlas.findRegion("main_ship"), mainAtlas.findRegion("bulletMainShip"),
+                bulletPool, shootSound, 100, 1);
         exit = new Button(menuAtlas, "btExit", 0.05f);
-        explosionPool = new ExplosionPool(mainAtlas.findRegion("explosion"));
+        explosionPool = new ExplosionPool(mainAtlas.findRegion("explosion"), Gdx.audio.newSound(Gdx.files.internal("explosion.wav")));
         enemyShipPool = new EnemyShipPool(shootSound, bulletPool, explosionPool);
         enemyEmmiter = new EnemyEmmiter(enemyShipPool, worldBounds, mainAtlas);
 
@@ -161,6 +165,30 @@ public class GameScreen extends Base2DScreen {
     }
 
     private void checkCollision() {
+        List<EnemyShip> enemyShipList = enemyShipPool.getActiveObjects();
+        List<Bullet>  enemyBulletList = bulletPool.getActiveObjects();
+        for(EnemyShip enemyShip: enemyShipList) {
+            if(enemyShip.isDestroyed()) {
+                continue;
+            }
+            float minDist = enemyShip.getHalfWidth() + mainShip.getHalfWidth();
+            if(enemyShip.pos.dst2(mainShip.pos) < Math.pow(minDist, 2)) {
+                enemyShip.boom();
+                enemyShip.destroy();
+            }
+
+            for(Bullet bullet: enemyBulletList) {
+                if(bullet.isDestroyed() || !bullet.getOwner().equals(mainShip)) {
+                    continue;
+                }
+                if(!bullet.isOutside(enemyShip)) {
+                    bullet.destroy();
+                    enemyShip.damage(bullet.getDamage());
+                }
+            }
+        }
+
+
 
     }
 

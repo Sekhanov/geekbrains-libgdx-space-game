@@ -23,4 +23,6 @@ public class EnemyShipPool extends SpritesPool<EnemyShip> {
         return new EnemyShip(shootSound, bulletPool, explosionPool);
     }
 
+
+
 }

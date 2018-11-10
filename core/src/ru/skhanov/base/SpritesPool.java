@@ -59,4 +59,8 @@ public abstract class SpritesPool<T extends Sprite> {
             freeObjects.add(object);
         }
     }
+
+    public List<T> getActiveObjects() {
+        return activeObjects;
+    }
 }

@@ -30,7 +30,9 @@ public class EnemyShip extends Ship {
                     float bulletVY,
                     Rect worldBounds,
                     float reloadInterval,
-                    float bulletHeight) {
+                    float bulletHeight,
+                    int hp,
+                    int damage) {
         regions = Regions.split(region, 1, 2, 2);
         setHeightProportion(height);
         pos.set(Rnd.nextFloat(worldBounds.getLeft() + halfWidth, worldBounds.getRight() - halfWidth), worldBounds.getTop() + halfHeight);
@@ -40,10 +42,13 @@ public class EnemyShip extends Ship {
         this.bulletRegion = bulletRegion;
         this.bulletVY.set(0, bulletVY);
         this.bulletHeight = bulletHeight;
+        this.hp = hp;
+        this.damage = damage;
     }
 
     @Override
     public void update(float delta) {
+        super.update(delta);
         if(getTop() > worldBounds.getTop()) {
         pos.mulAdd(acceleration, delta);
         } else  {
@@ -52,7 +57,6 @@ public class EnemyShip extends Ship {
 
         enemyShoot(delta);
         if(getBottom() < worldBounds.getBottom()) {
-            boom();
             destroy();
         }
 
@@ -69,5 +73,9 @@ public class EnemyShip extends Ship {
         }
     }
 
-
+    @Override
+    public void destroy() {
+        super.destroy();
+        boom();
+    }
 }

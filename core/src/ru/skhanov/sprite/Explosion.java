@@ -1,5 +1,6 @@
 package ru.skhanov.sprite;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
@@ -9,14 +10,19 @@ public class Explosion extends Sprite {
 
     protected static final float ANIMATION_INTERVAL = 0.017f;
     protected float animationTimer;
+    private Sound explosionSound;
+
     
-    public Explosion(TextureRegion textureRegion, int row, int col, int frames) {
+    public Explosion(TextureRegion textureRegion, int row, int col, int frames, Sound explosionSound) {
         super(textureRegion, row, col, frames);
+        this.explosionSound = explosionSound;
     }
 
     public void set(float height, Vector2 pos) {
         this.pos.set(pos);
         setHeightProportion(height);
+        explosionSound.play();
+
     }
 
     @Override

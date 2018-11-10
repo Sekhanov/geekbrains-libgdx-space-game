@@ -19,6 +19,9 @@ public abstract class Ship extends Sprite {
     protected TextureRegion bulletRegion;
     protected float bulletHeight;
     protected int damage;
+    protected int hp;
+    protected float damageAnimateInterval = 0.1f;
+    protected float damageAnimateTimer;
     private Sound shootSound;
 
 
@@ -41,6 +44,15 @@ public abstract class Ship extends Sprite {
     }
 
     @Override
+    public void update(float delta) {
+        super.update(delta);
+        damageAnimateTimer += delta;
+        if(damageAnimateTimer > damageAnimateInterval) {
+            frame = 0;
+        }
+    }
+
+    @Override
     public void resize(Rect worldBounds) {
         this.worldBounds = worldBounds;
     }
@@ -48,6 +60,15 @@ public abstract class Ship extends Sprite {
     public void boom() {
         Explosion explosion = explosionPool.obtain();
         explosion.set(getHeight(), pos);
+    }
+
+    public void damage(int damage) {
+        frame = 1;
+        damageAnimateTimer = 0;
+        hp -= damage;
+        if(hp <= 0) {
+            destroy();
+        }
     }
 
 

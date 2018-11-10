@@ -25,11 +25,13 @@ public class MainShip extends Ship {
 
 
 
-    public MainShip(TextureRegion regions, TextureRegion bulletRegion, BulletPool bulletPool, Sound shootSound) {
+    public MainShip(TextureRegion regions, TextureRegion bulletRegion, BulletPool bulletPool, Sound shootSound, int hp, int damage) {
         super(regions, bulletPool, shootSound);
         setHeightProportion(0.15f);
         this.bulletPool = bulletPool;
         this.bulletRegion = bulletRegion;
+        this.damage = damage;
+        this.hp = hp;
     }
 
     @Override
@@ -40,6 +42,7 @@ public class MainShip extends Ship {
 
     @Override
     public void update(float delta) {
+        super.update(delta);
         reachWorldBoundsCheck();
         pos.mulAdd(v, delta);
 
