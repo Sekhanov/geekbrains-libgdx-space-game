@@ -14,6 +14,7 @@ import ru.skhanov.math.Rect;
 import ru.skhanov.math.Rnd;
 import ru.skhanov.pool.BulletPool;
 import ru.skhanov.pool.EnemyShipPool;
+import ru.skhanov.pool.ExplosionPool;
 import ru.skhanov.sprite.Background;
 import ru.skhanov.sprite.Button;
 import ru.skhanov.sprite.EnemyShip;
@@ -34,11 +35,10 @@ public class GameScreen extends Base2DScreen {
     private MainShip mainShip;
     private BulletPool bulletPool;
     private EnemyShipPool enemyShipPool;
+    private ExplosionPool explosionPool;
     private Music music;
     private Sound shootSound;
     private EnemyEmmiter enemyEmmiter;
-
-
 
 
     @Override
@@ -56,14 +56,19 @@ public class GameScreen extends Base2DScreen {
         shootSound = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
         mainShip = new MainShip(mainAtlas.findRegion("main_ship"), mainAtlas.findRegion("bulletMainShip"), bulletPool, shootSound);
         exit = new Button(menuAtlas, "btExit", 0.05f);
-        enemyShipPool = new EnemyShipPool(shootSound, bulletPool);
+        explosionPool = new ExplosionPool(mainAtlas.findRegion("explosion"));
+        enemyShipPool = new EnemyShipPool(shootSound, bulletPool, explosionPool);
         enemyEmmiter = new EnemyEmmiter(enemyShipPool, worldBounds, mainAtlas);
 
+        playMusic();
+
+
+    }
+
+    private void playMusic() {
         music = Gdx.audio.newMusic(Gdx.files.internal("B&DDLevel5.mp3"));
-        music.play();
+//        music.play();
         music.setLooping(true);
-
-
     }
 
     @Override
@@ -103,6 +108,7 @@ public class GameScreen extends Base2DScreen {
         mainShip.draw(batch);
         bulletPool.drawActiveObjects(batch);
         enemyShipPool.drawActiveObjects(batch);
+        explosionPool.drawActiveObjects(batch);
         exit.draw(batch);
         batch.end();
     }
@@ -113,6 +119,8 @@ public class GameScreen extends Base2DScreen {
         }
         bulletPool.updateActiveObjects(delta);
         enemyShipPool.updateActiveObjects(delta);
+        explosionPool.updateActiveObjects(delta);
+
         mainShip.update(delta);
     }
 
@@ -159,6 +167,7 @@ public class GameScreen extends Base2DScreen {
     private void deleteAllDestroyed() {
         bulletPool.freeAllDestroyedActiveObjects();
         enemyShipPool.freeAllDestroyedActiveObjects();
+        explosionPool.freeAllDestroyedActiveObjects();
     }
 
 

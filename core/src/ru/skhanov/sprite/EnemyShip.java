@@ -8,6 +8,7 @@ import ru.skhanov.base.Sprite;
 import ru.skhanov.math.Rect;
 import ru.skhanov.math.Rnd;
 import ru.skhanov.pool.BulletPool;
+import ru.skhanov.pool.ExplosionPool;
 import ru.skhanov.utils.Regions;
 
 public class EnemyShip extends Ship {
@@ -17,8 +18,9 @@ public class EnemyShip extends Ship {
     private Vector2 acceleration = new Vector2(0, -0.5f);
 
 
-    public EnemyShip(Sound shootSound, BulletPool bulletPool) {
+    public EnemyShip(Sound shootSound, BulletPool bulletPool, ExplosionPool explosionPool) {
         super(shootSound, bulletPool);
+        this.explosionPool = explosionPool;
     }
 
     public void set(TextureRegion region,
@@ -49,7 +51,8 @@ public class EnemyShip extends Ship {
         }
 
         enemyShoot(delta);
-        if(getTop() < worldBounds.getBottom()) {
+        if(getBottom() < worldBounds.getBottom()) {
+            boom();
             destroy();
         }
 

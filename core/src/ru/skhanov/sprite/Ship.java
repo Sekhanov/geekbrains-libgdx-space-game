@@ -7,10 +7,12 @@ import com.badlogic.gdx.math.Vector2;
 import ru.skhanov.base.Sprite;
 import ru.skhanov.math.Rect;
 import ru.skhanov.pool.BulletPool;
+import ru.skhanov.pool.ExplosionPool;
 
-public class Ship extends Sprite {
+public abstract class Ship extends Sprite {
 
     protected Rect worldBounds;
+    protected ExplosionPool explosionPool;
     protected Vector2 v = new Vector2();
     protected Vector2 bulletVY = new Vector2();
     protected BulletPool bulletPool;
@@ -41,6 +43,11 @@ public class Ship extends Sprite {
     @Override
     public void resize(Rect worldBounds) {
         this.worldBounds = worldBounds;
+    }
+
+    public void boom() {
+        Explosion explosion = explosionPool.obtain();
+        explosion.set(getHeight(), pos);
     }
 
 
