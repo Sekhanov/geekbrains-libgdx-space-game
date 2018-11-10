@@ -62,6 +62,10 @@ public class EnemyShip extends Ship {
 
     }
 
+    public boolean isBulletCollision(Rect bullet) {
+        return (super.isBulletCollision(bullet) && pos.y < bullet.getTop());
+    }
+
 
 
     private void enemyShoot(float delta) {

@@ -71,5 +71,8 @@ public abstract class Ship extends Sprite {
         }
     }
 
+    public boolean isBulletCollision(Rect bullet) {
+        return !isOutside(bullet);
+    }
 
 }

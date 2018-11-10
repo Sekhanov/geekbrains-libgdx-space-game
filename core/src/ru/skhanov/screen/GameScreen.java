@@ -13,7 +13,6 @@ import java.util.List;
 
 import ru.skhanov.base.Base2DScreen;
 import ru.skhanov.math.Rect;
-import ru.skhanov.math.Rnd;
 import ru.skhanov.pool.BulletPool;
 import ru.skhanov.pool.EnemyShipPool;
 import ru.skhanov.pool.ExplosionPool;
@@ -22,6 +21,7 @@ import ru.skhanov.sprite.Bullet;
 import ru.skhanov.sprite.Button;
 import ru.skhanov.sprite.EnemyShip;
 import ru.skhanov.sprite.MainShip;
+import ru.skhanov.sprite.Ship;
 import ru.skhanov.sprite.Star;
 import ru.skhanov.utils.EnemyEmmiter;
 
@@ -171,25 +171,33 @@ public class GameScreen extends Base2DScreen {
             if(enemyShip.isDestroyed()) {
                 continue;
             }
-            float minDist = enemyShip.getHalfWidth() + mainShip.getHalfWidth();
-            if(enemyShip.pos.dst2(mainShip.pos) < Math.pow(minDist, 2)) {
-                enemyShip.boom();
-                enemyShip.destroy();
-            }
-
-            for(Bullet bullet: enemyBulletList) {
-                if(bullet.isDestroyed() || !bullet.getOwner().equals(mainShip)) {
-                    continue;
-                }
-                if(!bullet.isOutside(enemyShip)) {
-                    bullet.destroy();
-                    enemyShip.damage(bullet.getDamage());
-                }
-            }
+            destroyEnemyOnWorldBottom(enemyShip);
+            damageShipFromBullet(enemyBulletList, enemyShip, false);
+            damageShipFromBullet(enemyBulletList, mainShip, true);
         }
 
 
 
+    }
+
+    private void damageShipFromBullet(List<Bullet> enemyBulletList, Ship ship, boolean isMainShip) {
+        for(Bullet bullet: enemyBulletList) {
+            if(bullet.isDestroyed() || bullet.getOwner().equals(mainShip) == isMainShip) {
+                continue;
+            }
+            if(ship.isBulletCollision(bullet)) {
+                bullet.destroy();
+                ship.damage(bullet.getDamage());
+            }
+        }
+    }
+
+    private void destroyEnemyOnWorldBottom(EnemyShip enemyShip) {
+        float minDist = enemyShip.getHalfWidth() + mainShip.getHalfWidth();
+        if(enemyShip.pos.dst2(mainShip.pos) < Math.pow(minDist, 2)) {
+            enemyShip.boom();
+            enemyShip.destroy();
+        }
     }
 
     private void deleteAllDestroyed() {

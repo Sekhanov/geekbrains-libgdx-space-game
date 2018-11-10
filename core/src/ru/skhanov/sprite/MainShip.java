@@ -120,7 +120,10 @@ public class MainShip extends Ship {
         return false;
     }
 
-
+    @Override
+    public boolean isBulletCollision(Rect bullet) {
+        return super.isBulletCollision(bullet) && pos.y > bullet.getBottom();
+    }
 
     public void moveRight() {
         System.out.println( "shipRignt:" + getRight() + "/worldRight" + worldBounds.getRight());
