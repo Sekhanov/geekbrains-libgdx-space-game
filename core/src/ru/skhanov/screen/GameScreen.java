@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import ru.skhanov.base.Base2DScreen;
+import ru.skhanov.base.Sprite;
 import ru.skhanov.math.Rect;
 import ru.skhanov.pool.BulletPool;
 import ru.skhanov.pool.EnemyShipPool;
@@ -39,7 +40,9 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
     private TextureAtlas menuAtlas;
     private TextureAtlas mainAtlas;
     private Star[] stars;
-    private Button exit;
+    private Button backButton;
+    private Button newGameButton;
+    private Sprite gameOverMessage;
     private MainShip mainShip;
     private BulletPool bulletPool;
     private EnemyShipPool enemyShipPool;
@@ -61,16 +64,23 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
         background = new Background(new TextureRegion(bgTexture));
         menuAtlas = new TextureAtlas("menuAtlas.tpack");
         mainAtlas = new TextureAtlas("mainAtlas.tpack");
-
+        initGameOverMessage();
         generateStars();
         bulletPool = new BulletPool();
         shootSound = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
-        exit = new Button(menuAtlas, "btExit", 0.05f);
+        backButton = new Button(menuAtlas, "btExit", 0.05f);
+        newGameButton = new Button(mainAtlas, "button_new_game", 0.05f);
         explosionPool = new ExplosionPool(mainAtlas.findRegion("explosion"), Gdx.audio.newSound(Gdx.files.internal("explosion.wav")));
         enemyShipPool = new EnemyShipPool(shootSound, bulletPool, explosionPool);
         enemyEmmiter = new EnemyEmmiter(enemyShipPool, worldBounds, mainAtlas);
         mainShip = new MainShip(mainAtlas.findRegion("main_ship"), mainAtlas.findRegion("bulletMainShip"), bulletPool, explosionPool, shootSound, 100, 1);
         playMusic();
+    }
+
+    private void initGameOverMessage() {
+        gameOverMessage = new Sprite(mainAtlas.findRegion("message_game_over"));
+        gameOverMessage.setHeightProportion(0.1f);
+        gameOverMessage.setBottom(0.1f);
     }
 
     private void generateStars() {
@@ -95,8 +105,9 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
         }
         mainShip.resize(worldBounds);
 
-        exit.setTop(worldBounds.getTop() - 0.01f);
-        exit.setLeft(worldBounds.getLeft() + 0.01f);
+        backButton.setTop(worldBounds.getTop() - 0.01f);
+        backButton.setLeft(worldBounds.getLeft() + 0.01f);
+        newGameButton.setBottom(- 0.1f);
 
     }
 
@@ -125,7 +136,9 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
             bulletPool.drawActiveObjects(batch);
             enemyShipPool.drawActiveObjects(batch);
         } else {
-             exit.draw(batch);
+             backButton.draw(batch);
+             gameOverMessage.draw(batch);
+             newGameButton.draw(batch);
         }
         explosionPool.drawActiveObjects(batch);
         batch.end();
@@ -155,14 +168,16 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
         mainShip.touchDown(touch, pointer);
-        exit.touchDown(touch, pointer);
+        backButton.touchDown(touch, pointer);
+        newGameButton.touchDown(touch, pointer);
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
         mainShip.touchUp(touch, pointer);
-        exit.touchUp(touch, pointer, this);
+        backButton.touchUp(touch, pointer, this);
+        newGameButton.touchUp(touch, pointer, this);
         return false;
     }
 
@@ -221,6 +236,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
 
     @Override
     public void accept(Button button) {
-        if(button.equals(exit)) myLibGdxGame.setScreen(menuScreen); ;
+        if(button.equals(backButton)) myLibGdxGame.setScreen(menuScreen);
+        if(button.equals(newGameButton)) myLibGdxGame.setScreen(new GameScreen(menuScreen, myLibGdxGame));
     }
 }
