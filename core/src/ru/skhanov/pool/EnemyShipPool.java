@@ -24,5 +24,4 @@ public class EnemyShipPool extends SpritesPool<EnemyShip> {
     }
 
 
-
 }

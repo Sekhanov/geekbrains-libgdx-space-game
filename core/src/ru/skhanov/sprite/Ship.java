@@ -75,4 +75,9 @@ public abstract class Ship extends Sprite {
         return !isOutside(bullet);
     }
 
+    @Override
+    public void destroy() {
+        super.destroy();
+        hp = 0;
+    }
 }

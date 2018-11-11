@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import ru.skhanov.base.Sprite;
 import ru.skhanov.math.Rect;
 import ru.skhanov.pool.BulletPool;
+import ru.skhanov.pool.ExplosionPool;
 
 public class MainShip extends Ship {
 
@@ -25,13 +26,14 @@ public class MainShip extends Ship {
 
 
 
-    public MainShip(TextureRegion regions, TextureRegion bulletRegion, BulletPool bulletPool, Sound shootSound, int hp, int damage) {
+    public MainShip(TextureRegion regions, TextureRegion bulletRegion, BulletPool bulletPool, ExplosionPool explosionPool, Sound shootSound, int hp, int damage) {
         super(regions, bulletPool, shootSound);
         setHeightProportion(0.15f);
         this.bulletPool = bulletPool;
         this.bulletRegion = bulletRegion;
         this.damage = damage;
         this.hp = hp;
+        this.explosionPool = explosionPool;
     }
 
     @Override
@@ -139,7 +141,11 @@ public class MainShip extends Ship {
         v.setZero();
     }
 
-
+    @Override
+    public void destroy() {
+        boom();
+        super.destroy();
+    }
 }
 
 

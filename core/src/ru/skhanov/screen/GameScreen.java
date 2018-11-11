@@ -1,6 +1,8 @@
 package ru.skhanov.screen;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
@@ -10,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import ru.skhanov.base.Base2DScreen;
 import ru.skhanov.math.Rect;
@@ -25,10 +28,12 @@ import ru.skhanov.sprite.Ship;
 import ru.skhanov.sprite.Star;
 import ru.skhanov.utils.EnemyEmmiter;
 
-public class GameScreen extends Base2DScreen {
+public class GameScreen extends Base2DScreen implements Consumer<Button> {
 
     private static final int STAR_COUNT = 256;
 
+    private final Game myLibGdxGame;
+    private Screen menuScreen;
     private Background background;
     private Texture bgTexture;
     private TextureAtlas menuAtlas;
@@ -43,6 +48,11 @@ public class GameScreen extends Base2DScreen {
     private Sound shootSound;
     private EnemyEmmiter enemyEmmiter;
 
+    public GameScreen(Screen menuScreen, Game game) {
+        this.menuScreen = menuScreen;
+        this.myLibGdxGame = game;
+    }
+
 
     @Override
     public void show() {
@@ -51,22 +61,23 @@ public class GameScreen extends Base2DScreen {
         background = new Background(new TextureRegion(bgTexture));
         menuAtlas = new TextureAtlas("menuAtlas.tpack");
         mainAtlas = new TextureAtlas("mainAtlas.tpack");
-        stars = new Star[STAR_COUNT];
-        for(int i = 0; i < stars.length; i++) {
-            stars[i] = new Star(menuAtlas);
-        }
+
+        generateStars();
         bulletPool = new BulletPool();
         shootSound = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
-        mainShip = new MainShip(mainAtlas.findRegion("main_ship"), mainAtlas.findRegion("bulletMainShip"),
-                bulletPool, shootSound, 100, 1);
         exit = new Button(menuAtlas, "btExit", 0.05f);
         explosionPool = new ExplosionPool(mainAtlas.findRegion("explosion"), Gdx.audio.newSound(Gdx.files.internal("explosion.wav")));
         enemyShipPool = new EnemyShipPool(shootSound, bulletPool, explosionPool);
         enemyEmmiter = new EnemyEmmiter(enemyShipPool, worldBounds, mainAtlas);
-
+        mainShip = new MainShip(mainAtlas.findRegion("main_ship"), mainAtlas.findRegion("bulletMainShip"), bulletPool, explosionPool, shootSound, 100, 1);
         playMusic();
+    }
 
-
+    private void generateStars() {
+        stars = new Star[STAR_COUNT];
+        for(int i = 0; i < stars.length; i++) {
+            stars[i] = new Star(menuAtlas);
+        }
     }
 
     private void playMusic() {
@@ -84,8 +95,8 @@ public class GameScreen extends Base2DScreen {
         }
         mainShip.resize(worldBounds);
 
-        exit.setTop(worldBounds.getTop());
-        exit.setLeft(worldBounds.getLeft());
+        exit.setTop(worldBounds.getTop() - 0.01f);
+        exit.setLeft(worldBounds.getLeft() + 0.01f);
 
     }
 
@@ -109,11 +120,14 @@ public class GameScreen extends Base2DScreen {
             stars[i].draw(batch);
         }
 
-        mainShip.draw(batch);
-        bulletPool.drawActiveObjects(batch);
-        enemyShipPool.drawActiveObjects(batch);
+        if(!mainShip.isDestroyed()) {
+            mainShip.draw(batch);
+            bulletPool.drawActiveObjects(batch);
+            enemyShipPool.drawActiveObjects(batch);
+        } else {
+             exit.draw(batch);
+        }
         explosionPool.drawActiveObjects(batch);
-        exit.draw(batch);
         batch.end();
     }
 
@@ -121,11 +135,12 @@ public class GameScreen extends Base2DScreen {
         for(int i = 0; i < stars.length; i++) {
             stars[i].update(delta);
         }
+        if(!mainShip.isDestroyed()) {
         bulletPool.updateActiveObjects(delta);
         enemyShipPool.updateActiveObjects(delta);
-        explosionPool.updateActiveObjects(delta);
-
         mainShip.update(delta);
+        }
+        explosionPool.updateActiveObjects(delta);
     }
 
     @Override
@@ -137,7 +152,6 @@ public class GameScreen extends Base2DScreen {
         music.dispose();
     }
 
-
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
         mainShip.touchDown(touch, pointer);
@@ -148,7 +162,7 @@ public class GameScreen extends Base2DScreen {
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
         mainShip.touchUp(touch, pointer);
-        exit.touchUp(touch, pointer, t -> Gdx.app.exit());
+        exit.touchUp(touch, pointer, this);
         return false;
     }
 
@@ -171,13 +185,10 @@ public class GameScreen extends Base2DScreen {
             if(enemyShip.isDestroyed()) {
                 continue;
             }
-            destroyEnemyOnWorldBottom(enemyShip);
+            shipCollision(enemyShip);
             damageShipFromBullet(enemyBulletList, enemyShip, false);
             damageShipFromBullet(enemyBulletList, mainShip, true);
         }
-
-
-
     }
 
     private void damageShipFromBullet(List<Bullet> enemyBulletList, Ship ship, boolean isMainShip) {
@@ -192,11 +203,13 @@ public class GameScreen extends Base2DScreen {
         }
     }
 
-    private void destroyEnemyOnWorldBottom(EnemyShip enemyShip) {
+    private void shipCollision(EnemyShip enemyShip) {
         float minDist = enemyShip.getHalfWidth() + mainShip.getHalfWidth();
         if(enemyShip.pos.dst2(mainShip.pos) < Math.pow(minDist, 2)) {
-            enemyShip.boom();
             enemyShip.destroy();
+            mainShip.damage(40);
+
+
         }
     }
 
@@ -206,5 +219,8 @@ public class GameScreen extends Base2DScreen {
         explosionPool.freeAllDestroyedActiveObjects();
     }
 
-
+    @Override
+    public void accept(Button button) {
+        if(button.equals(exit)) myLibGdxGame.setScreen(menuScreen); ;
+    }
 }

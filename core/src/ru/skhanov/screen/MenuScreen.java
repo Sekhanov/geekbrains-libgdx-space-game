@@ -59,8 +59,8 @@ public class MenuScreen extends Base2DScreen implements Consumer<Button> {
         for(int i = 0; i < stars.length; i++) {
             stars[i].resize(worldBounds);
         }
-        exit.setRight(worldBounds.getRight());
-        exit.setTop(worldBounds.getTop());
+        exit.setRight(worldBounds.getRight() - 0.01f);
+        exit.setTop(worldBounds.getTop() - 0.01f);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class MenuScreen extends Base2DScreen implements Consumer<Button> {
 
     @Override
     public void accept(Button button) {
-        if(button.equals(play)) myLibGdxGame.setScreen(new GameScreen());
+        if(button.equals(play)) myLibGdxGame.setScreen(new GameScreen(this, myLibGdxGame));
         if(button.equals(exit)) Gdx.app.exit();
     }
 }
