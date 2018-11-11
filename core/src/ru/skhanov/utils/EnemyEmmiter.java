@@ -32,13 +32,13 @@ public class EnemyEmmiter {
             if(random < 0.6) {
                 enemyShip.set(textureAtlas.findRegion("enemy0"),
                         textureAtlas.findRegion("bulletEnemy"),
-                        0.1f, -0.1f, -0.2f, worldBounds, 3f,0.01f, 5, 100);
+                        0.1f, -0.1f, -0.2f, worldBounds, 3f,0.01f, 5, 5);
             } else if(random > 0.6 && random < 0.8) {
                 enemyShip.set(textureAtlas.findRegion("enemy1"),textureAtlas.findRegion("bulletEnemy"),
-                        0.2f, -0.05f, -0.2f, worldBounds, 5f, 0.05f, 10, 20);
+                        0.2f, -0.05f, -0.2f, worldBounds, 5f, 0.05f, 10, 10);
             } else if (random > 0.8) {
                 enemyShip.set(textureAtlas.findRegion("enemy2"),textureAtlas.findRegion("bulletEnemy"),
-                        0.3f, -0.02f, -0.2f, worldBounds, 5f, 0.08f, 20, 40);
+                        0.3f, -0.02f, -0.2f, worldBounds, 5f, 0.08f, 20, 20);
             }
 
         }

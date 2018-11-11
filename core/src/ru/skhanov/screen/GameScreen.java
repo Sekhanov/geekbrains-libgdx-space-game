@@ -92,7 +92,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
 
     private void playMusic() {
         music = Gdx.audio.newMusic(Gdx.files.internal("B&DDLevel5.mp3"));
-//        music.play();
+        music.play();
         music.setLooping(true);
     }
 
@@ -136,6 +136,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
             bulletPool.drawActiveObjects(batch);
             enemyShipPool.drawActiveObjects(batch);
         } else {
+            if(music.isPlaying()) music.stop();
              backButton.draw(batch);
              gameOverMessage.draw(batch);
              newGameButton.draw(batch);
@@ -236,7 +237,13 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
 
     @Override
     public void accept(Button button) {
-        if(button.equals(backButton)) myLibGdxGame.setScreen(menuScreen);
-        if(button.equals(newGameButton)) myLibGdxGame.setScreen(new GameScreen(menuScreen, myLibGdxGame));
+        if(button.equals(backButton)) {
+            dispose();
+            myLibGdxGame.setScreen(menuScreen);
+        }
+        if(button.equals(newGameButton)) {
+            dispose();
+            myLibGdxGame.setScreen(new GameScreen(menuScreen, myLibGdxGame));
+        }
     }
 }
