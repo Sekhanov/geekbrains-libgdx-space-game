@@ -18,7 +18,7 @@ import ru.skhanov.sprite.Button;
 
 import ru.skhanov.sprite.Star;
 
-public class MenuScreen extends Base2DScreen implements Consumer<Button> {
+public class MenuScreen extends Base2DScreen {
 
     private static final int STAR_COUNT = 256;
     private final Game myLibGdxGame;
@@ -106,16 +106,11 @@ public class MenuScreen extends Base2DScreen implements Consumer<Button> {
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
-        play.touchUp(touch, pointer, this);
-        exit.touchUp(touch, pointer, this);
+        play.touchUp(touch, pointer, e -> myLibGdxGame.setScreen(new GameScreen(this, myLibGdxGame)));
+        exit.touchUp(touch, pointer, e -> Gdx.app.exit());
         return false;
     }
 
-    @Override
-    public void accept(Button button) {
-        if(button.equals(play)) myLibGdxGame.setScreen(new GameScreen(this, myLibGdxGame));
-        if(button.equals(exit)) Gdx.app.exit();
-    }
 }
 
 

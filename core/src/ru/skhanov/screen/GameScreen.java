@@ -7,14 +7,17 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 import ru.skhanov.base.Base2DScreen;
+import ru.skhanov.base.Font;
 import ru.skhanov.base.Sprite;
 import ru.skhanov.math.Rect;
 import ru.skhanov.pool.BulletPool;
@@ -32,6 +35,9 @@ import ru.skhanov.utils.EnemyEmmiter;
 public class GameScreen extends Base2DScreen implements Consumer<Button> {
 
     private static final int STAR_COUNT = 256;
+    private static final String FRAGS = "Frags: ";
+    private static final String HP = "hp: ";
+    private static final String LEVEL = "level: ";
 
     private final Game myLibGdxGame;
     private Screen menuScreen;
@@ -50,6 +56,12 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
     private Music music;
     private Sound shootSound;
     private EnemyEmmiter enemyEmmiter;
+    private Font font;
+    private StringBuilder sbFrags;
+    private StringBuilder sbHP;
+    private StringBuilder sbLevel;
+    private int frags;
+    private int level;
 
     public GameScreen(Screen menuScreen, Game game) {
         this.menuScreen = menuScreen;
@@ -75,6 +87,11 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
         enemyEmmiter = new EnemyEmmiter(enemyShipPool, worldBounds, mainAtlas);
         mainShip = new MainShip(mainAtlas.findRegion("main_ship"), mainAtlas.findRegion("bulletMainShip"), bulletPool, explosionPool, shootSound, 100, 1);
         playMusic();
+        font = new Font("Neucha.fnt", "Neucha.png");
+        font.setFontSize(0.03f);
+        sbLevel = new StringBuilder();
+        sbHP = new StringBuilder();
+        sbFrags = new StringBuilder();
     }
 
     private void initGameOverMessage() {
@@ -92,7 +109,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
 
     private void playMusic() {
         music = Gdx.audio.newMusic(Gdx.files.internal("B&DDLevel5.mp3"));
-        music.play();
+//        music.play();
         music.setLooping(true);
     }
 
@@ -142,8 +159,19 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
              newGameButton.draw(batch);
         }
         explosionPool.drawActiveObjects(batch);
+        printInfo(batch);
         batch.end();
     }
+
+    private void printInfo(SpriteBatch batch) {
+        sbFrags.setLength(0);
+        sbHP.setLength(0);
+        sbLevel.setLength(0);
+        font.draw(batch, sbFrags.append(FRAGS).append(frags), worldBounds.getLeft() + 0.01f, worldBounds.getTop() - 0.01f);
+        font.draw(batch, sbHP.append(HP).append(mainShip.getHp()), worldBounds.pos.x, worldBounds.getTop() - 0.01f, Align.center);
+        font.draw(batch, sbLevel.append(LEVEL).append(level), worldBounds.getRight() - 0.01f, worldBounds.getTop() - 0.01f, Align.right);
+    }
+
 
     private void update(float delta) {
         for(int i = 0; i < stars.length; i++) {
@@ -164,6 +192,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
         mainAtlas.dispose();
         batch.dispose();
         music.dispose();
+        font.dispose();
     }
 
     @Override
@@ -203,6 +232,9 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
             }
             shipCollision(enemyShip);
             damageShipFromBullet(enemyBulletList, enemyShip, false);
+            if(enemyShip.isDestroyed()) {
+                frags++;
+            }
             damageShipFromBullet(enemyBulletList, mainShip, true);
         }
     }
