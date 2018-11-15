@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import ru.skhanov.base.MovingFont;
 import ru.skhanov.base.Sprite;
 import ru.skhanov.math.Rect;
 import ru.skhanov.pool.BulletPool;
@@ -26,14 +27,13 @@ public class MainShip extends Ship {
 
 
 
-    public MainShip(TextureRegion regions, TextureRegion bulletRegion, BulletPool bulletPool, ExplosionPool explosionPool, Sound shootSound, int hp, int damage) {
-        super(regions, bulletPool, shootSound);
+    public MainShip(TextureRegion regions, TextureRegion bulletRegion, BulletPool bulletPool, ExplosionPool explosionPool, Sound shootSound, int hp, int damage, MovingFont hpMoveFont) {
+        super(regions, bulletPool, shootSound, hp, damage, explosionPool, hpMoveFont);
         setHeightProportion(0.15f);
         this.bulletPool = bulletPool;
         this.bulletRegion = bulletRegion;
-        this.damage = damage;
-        this.hp = hp;
-        this.explosionPool = explosionPool;
+        this.shipType = ShipType.MAIN_SHIP;
+
     }
 
     @Override

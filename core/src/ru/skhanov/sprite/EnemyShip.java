@@ -4,6 +4,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import ru.skhanov.base.MovingFont;
 import ru.skhanov.base.Sprite;
 import ru.skhanov.math.Rect;
 import ru.skhanov.math.Rnd;
@@ -18,9 +19,12 @@ public class EnemyShip extends Ship {
     private Vector2 acceleration = new Vector2(0, -0.5f);
 
 
-    public EnemyShip(Sound shootSound, BulletPool bulletPool, ExplosionPool explosionPool) {
-        super(shootSound, bulletPool);
-        this.explosionPool = explosionPool;
+
+
+
+    public EnemyShip(Sound shootSound, BulletPool bulletPool, ExplosionPool explosionPool, MovingFont hpMoveFont) {
+        super(shootSound, bulletPool, explosionPool, hpMoveFont);
+        this.shipType = ShipType.ENEMY_SHIP;
     }
 
     public void set(TextureRegion region,
@@ -43,6 +47,7 @@ public class EnemyShip extends Ship {
         this.bulletVY.set(0, bulletVY);
         this.bulletHeight = bulletHeight;
         this.hp = hp;
+        this.initialHp = hp;
         this.damage = damage;
     }
 
@@ -82,4 +87,6 @@ public class EnemyShip extends Ship {
         super.destroy();
         boom();
     }
+
+
 }

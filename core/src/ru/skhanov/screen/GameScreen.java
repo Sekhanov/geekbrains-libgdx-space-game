@@ -18,6 +18,7 @@ import java.util.function.Consumer;
 
 import ru.skhanov.base.Base2DScreen;
 import ru.skhanov.base.Font;
+import ru.skhanov.base.MovingFont;
 import ru.skhanov.base.Sprite;
 import ru.skhanov.math.Rect;
 import ru.skhanov.pool.BulletPool;
@@ -62,6 +63,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
     private StringBuilder sbLevel;
     private int frags;
     private int level;
+    private MovingFont hpMoveFont;
 
     public GameScreen(Screen menuScreen, Game game) {
         this.menuScreen = menuScreen;
@@ -76,6 +78,9 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
         background = new Background(new TextureRegion(bgTexture));
         menuAtlas = new TextureAtlas("menuAtlas.tpack");
         mainAtlas = new TextureAtlas("mainAtlas.tpack");
+        font = new Font("Neucha.fnt", "Neucha.png");
+        font.setFontSize(0.03f);
+        hpMoveFont = new MovingFont("Neucha.fnt", "Neucha.png", new Vector2(0, 0.1f));
         initGameOverMessage();
         generateStars();
         bulletPool = new BulletPool();
@@ -83,12 +88,12 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
         backButton = new Button(menuAtlas, "btExit", 0.05f);
         newGameButton = new Button(mainAtlas, "button_new_game", 0.05f);
         explosionPool = new ExplosionPool(mainAtlas.findRegion("explosion"), Gdx.audio.newSound(Gdx.files.internal("explosion.wav")));
-        enemyShipPool = new EnemyShipPool(shootSound, bulletPool, explosionPool);
+        enemyShipPool = new EnemyShipPool(shootSound, bulletPool, explosionPool, hpMoveFont);
         enemyEmmiter = new EnemyEmmiter(enemyShipPool, worldBounds, mainAtlas);
-        mainShip = new MainShip(mainAtlas.findRegion("main_ship"), mainAtlas.findRegion("bulletMainShip"), bulletPool, explosionPool, shootSound, 100, 1);
+        mainShip = new MainShip(mainAtlas.findRegion("main_ship"),
+                mainAtlas.findRegion("bulletMainShip"),
+                bulletPool, explosionPool, shootSound, 100, 1, hpMoveFont);
         playMusic();
-        font = new Font("Neucha.fnt", "Neucha.png");
-        font.setFontSize(0.03f);
         sbLevel = new StringBuilder();
         sbHP = new StringBuilder();
         sbFrags = new StringBuilder();
