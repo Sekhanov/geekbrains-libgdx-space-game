@@ -1,10 +1,14 @@
 package ru.skhanov.base;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
 
+
 public class MovingFont extends Font {
+
+    private static final String DAMAGE = "dm: -";
 
     private Vector2 pos;
     private Vector2 v;
@@ -21,7 +25,8 @@ public class MovingFont extends Font {
     }
 
     public void draw(Batch batch, CharSequence charSequence) {
-        super.draw(batch, charSequence, pos.x, pos.y, Align.center);
+        this.setColor(Color.RED);
+        super.draw(batch, DAMAGE + charSequence, pos.x, pos.y, Align.center);
         animationFrameCount--;
     }
 

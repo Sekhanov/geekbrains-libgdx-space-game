@@ -62,7 +62,6 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
     private StringBuilder sbHP;
     private StringBuilder sbLevel;
     private int frags;
-    private int level;
     private MovingFont hpMoveFont;
 
     public GameScreen(Screen menuScreen, Game game) {
@@ -80,7 +79,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
         mainAtlas = new TextureAtlas("mainAtlas.tpack");
         font = new Font("Neucha.fnt", "Neucha.png");
         font.setFontSize(0.03f);
-        hpMoveFont = new MovingFont("Neucha.fnt", "Neucha.png", new Vector2(0, 0.1f));
+        hpMoveFont = new MovingFont("Neucha.fnt", "Neucha.png", new Vector2(0, 0.05f));
         initGameOverMessage();
         generateStars();
         bulletPool = new BulletPool();
@@ -137,7 +136,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
     public void render(float delta) {
         super.render(delta);
         update(delta);
-        enemyEmmiter.generate(delta);
+        enemyEmmiter.generate(delta, frags);
         checkCollision();
         deleteAllDestroyed();
         draw();
@@ -174,7 +173,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
         sbLevel.setLength(0);
         font.draw(batch, sbFrags.append(FRAGS).append(frags), worldBounds.getLeft() + 0.01f, worldBounds.getTop() - 0.01f);
         font.draw(batch, sbHP.append(HP).append(mainShip.getHp()), worldBounds.pos.x, worldBounds.getTop() - 0.01f, Align.center);
-        font.draw(batch, sbLevel.append(LEVEL).append(level), worldBounds.getRight() - 0.01f, worldBounds.getTop() - 0.01f, Align.right);
+        font.draw(batch, sbLevel.append(LEVEL).append(enemyEmmiter.getLevel()), worldBounds.getRight() - 0.01f, worldBounds.getTop() - 0.01f, Align.right);
     }
 
 
@@ -239,6 +238,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
             damageShipFromBullet(enemyBulletList, enemyShip, false);
             if(enemyShip.isDestroyed()) {
                 frags++;
+
             }
             damageShipFromBullet(enemyBulletList, mainShip, true);
         }
