@@ -17,6 +17,7 @@ public class EnemyShip extends Ship {
     private float reloadInterval;
     private float reloadTimer;
     private Vector2 acceleration = new Vector2(0, -0.5f);
+    private MovingFont movingFont;
 
 
 

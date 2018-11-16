@@ -36,7 +36,8 @@ public abstract class Ship extends Sprite {
 
 
 
-    public Ship(TextureRegion regions, BulletPool bulletPool, Sound shootSound, int hp, int damage, ExplosionPool explosionPool, MovingFont hpMoveFont) {
+    public Ship(TextureRegion regions, BulletPool bulletPool, Sound shootSound, int hp, int damage,
+                ExplosionPool explosionPool, MovingFont hpMoveFont) {
         super(regions, 1, 2, 2);
         this.bulletPool = bulletPool;
         this.shootSound = shootSound;
@@ -46,6 +47,7 @@ public abstract class Ship extends Sprite {
         this.initialHp = hp;
         this.explosionPool = explosionPool;
         this.hpMoveFont = hpMoveFont;
+        this.hpMoveFont.setFontSize(0.03f);
 
     }
 
@@ -61,7 +63,6 @@ public abstract class Ship extends Sprite {
     public void draw(SpriteBatch batch) {
         super.draw(batch);
         changeHpAnimation(batch);
-
     }
 
 
@@ -127,6 +128,10 @@ public abstract class Ship extends Sprite {
                     }
                     break;
                 case ENEMY_SHIP:
+                    hpMoveFont.draw(batch, changeHp);
+                    if(hpMoveFont.getAnimationFrameCount() == 0) {
+                        initialHp = hp;
+                    }
                     break;
             }
         }

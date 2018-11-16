@@ -21,10 +21,8 @@ public class MovingFont extends Font {
     }
 
     public void draw(Batch batch, CharSequence charSequence) {
-        while(animationFrameCount > 0) {
-            super.draw(batch, charSequence, pos.x, pos.y, Align.center);
-            animationFrameCount--;
-        }
+        super.draw(batch, charSequence, pos.x, pos.y, Align.center);
+        animationFrameCount--;
     }
 
     public void update(float delta) {
