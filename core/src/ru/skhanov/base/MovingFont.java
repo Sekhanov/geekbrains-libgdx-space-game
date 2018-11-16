@@ -24,8 +24,8 @@ public class MovingFont extends Font {
         animationFrameCount = 30;
     }
 
-    public void draw(Batch batch, CharSequence charSequence) {
-        this.setColor(Color.RED);
+    public void draw(Batch batch, CharSequence charSequence, Color color) {
+        this.setColor(color);
         super.draw(batch, DAMAGE + charSequence, pos.x, pos.y, Align.center);
         animationFrameCount--;
     }

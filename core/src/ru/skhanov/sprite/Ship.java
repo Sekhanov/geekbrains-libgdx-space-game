@@ -1,6 +1,7 @@
 package ru.skhanov.sprite;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -122,13 +123,13 @@ public abstract class Ship extends Sprite {
             String changeHp = String.valueOf(initialHp - hp);
             switch (shipType) {
                 case MAIN_SHIP:
-                    hpMoveFont.draw(batch, changeHp);
+                    hpMoveFont.draw(batch, changeHp, Color.RED);
                     if(hpMoveFont.getAnimationFrameCount() == 0) {
                         initialHp = hp;
                     }
                     break;
                 case ENEMY_SHIP:
-                    hpMoveFont.draw(batch, changeHp);
+                    hpMoveFont.draw(batch, changeHp, Color.BLUE);
                     if(hpMoveFont.getAnimationFrameCount() == 0) {
                         initialHp = hp;
                     }

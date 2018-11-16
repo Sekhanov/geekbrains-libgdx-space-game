@@ -126,7 +126,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
         }
         mainShip.resize(worldBounds);
 
-        backButton.setTop(worldBounds.getTop() - 0.01f);
+        backButton.setBottom(worldBounds.getBottom() + 0.01f);
         backButton.setLeft(worldBounds.getLeft() + 0.01f);
         newGameButton.setBottom(- 0.1f);
 
