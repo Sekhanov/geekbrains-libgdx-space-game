@@ -25,8 +25,7 @@ public class Bonus extends Sprite {
                      Vector2 pos0,
                      Vector2 v0,
                      float height,
-                     Rect worldBounds,
-                     int damage) {
+                     Rect worldBounds) {
         this.regions[0] = region;
         this.bonusType = bonusType;
         this.pos.set(pos0);
@@ -43,4 +42,7 @@ public class Bonus extends Sprite {
         }
     }
 
+    public BonusType getBonusType() {
+        return bonusType;
+    }
 }

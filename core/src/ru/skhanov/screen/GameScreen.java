@@ -21,6 +21,7 @@ import ru.skhanov.base.Font;
 import ru.skhanov.base.MovingFont;
 import ru.skhanov.base.Sprite;
 import ru.skhanov.math.Rect;
+import ru.skhanov.pool.BonusPool;
 import ru.skhanov.pool.BulletPool;
 import ru.skhanov.pool.EnemyShipPool;
 import ru.skhanov.pool.ExplosionPool;
@@ -63,6 +64,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
     private StringBuilder sbLevel;
     private int frags;
     private MovingFont hpMoveFont;
+    private BonusPool bonusPool;
 
     public GameScreen(Screen menuScreen, Game game) {
         this.menuScreen = menuScreen;
@@ -83,11 +85,12 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
         initGameOverMessage();
         generateStars();
         bulletPool = new BulletPool();
+        bonusPool = new BonusPool();
         shootSound = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
         backButton = new Button(menuAtlas, "btExit", 0.05f);
         newGameButton = new Button(mainAtlas, "button_new_game", 0.05f);
         explosionPool = new ExplosionPool(mainAtlas.findRegion("explosion"), Gdx.audio.newSound(Gdx.files.internal("explosion.wav")));
-        enemyShipPool = new EnemyShipPool(shootSound, bulletPool, explosionPool, hpMoveFont);
+        enemyShipPool = new EnemyShipPool(shootSound, bulletPool, explosionPool, hpMoveFont, bonusPool);
         enemyEmmiter = new EnemyEmmiter(enemyShipPool, worldBounds, mainAtlas);
         mainShip = new MainShip(mainAtlas.findRegion("main_ship"),
                 mainAtlas.findRegion("bulletMainShip"),
@@ -156,6 +159,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
             mainShip.draw(batch);
             bulletPool.drawActiveObjects(batch);
             enemyShipPool.drawActiveObjects(batch);
+            bonusPool.drawActiveObjects(batch);
         } else {
             if(music.isPlaying()) music.stop();
              backButton.draw(batch);
@@ -184,6 +188,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
         if(!mainShip.isDestroyed()) {
         bulletPool.updateActiveObjects(delta);
         enemyShipPool.updateActiveObjects(delta);
+        bonusPool.updateActiveObjects(delta);
         mainShip.update(delta);
         }
         explosionPool.updateActiveObjects(delta);

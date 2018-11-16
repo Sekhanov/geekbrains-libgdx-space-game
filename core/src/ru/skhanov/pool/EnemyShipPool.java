@@ -13,17 +13,20 @@ public class EnemyShipPool extends SpritesPool<EnemyShip> {
     private BulletPool bulletPool;
     private ExplosionPool explosionPool;
     private MovingFont hpMoveFont;
+    private BonusPool bonusPool;
 
 
-    public EnemyShipPool(Sound shootSound, BulletPool bulletPool, ExplosionPool explosionPool, MovingFont hpMoveFont) {
+    public EnemyShipPool(Sound shootSound, BulletPool bulletPool, ExplosionPool explosionPool,
+                         MovingFont hpMoveFont, BonusPool bonusPool) {
         this.shootSound = shootSound;
         this.bulletPool = bulletPool;
         this.explosionPool = explosionPool;
         this.hpMoveFont = hpMoveFont;
+        this.bonusPool = bonusPool;
     }
 
     protected EnemyShip newObject() {
-        return new EnemyShip(shootSound, bulletPool, explosionPool, hpMoveFont);
+        return new EnemyShip(shootSound, bulletPool, explosionPool, hpMoveFont, bonusPool);
     }
 
 
