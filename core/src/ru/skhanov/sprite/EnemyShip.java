@@ -91,10 +91,11 @@ public class EnemyShip extends Ship {
 
     @Override
     public void destroy() {
-        super.destroy();
-        boom();
         Bonus bonus = bonusPool.obtain();
         generateBonus(bonus);
+        super.destroy();
+        boom();
+
 
     }
 
