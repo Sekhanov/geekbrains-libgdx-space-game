@@ -6,31 +6,32 @@ import com.badlogic.gdx.math.Vector2;
 import ru.skhanov.base.Sprite;
 import ru.skhanov.math.Rect;
 
-public class Bullet extends Sprite {
+public class Bonus extends Sprite {
+
+    public enum BonusType {
+        MEDIC, BULLET_POWER, BULLET_SPEED;
+    }
 
     private Rect worldBounds;
     private Vector2 v = new Vector2();
-    private int damage;
-    private Ship owner;
+    private BonusType bonusType;
 
-    public Bullet() {
+    public Bonus() {
         regions = new TextureRegion[1];
     }
 
-    public  void set(Ship owner,
-                     TextureRegion region,
+    public  void set(TextureRegion region,
+                     BonusType bonusType,
                      Vector2 pos0,
                      Vector2 v0,
                      float height,
-                     Rect worldBounds,
-                     int damage) {
-        this.owner = owner;
+                     Rect worldBounds) {
         this.regions[0] = region;
+        this.bonusType = bonusType;
         this.pos.set(pos0);
         this.v.set(v0);
         setHeightProportion(height);
         this.worldBounds = worldBounds;
-        this.damage = damage;
     }
 
     @Override
@@ -41,11 +42,7 @@ public class Bullet extends Sprite {
         }
     }
 
-    public Ship getOwner() {
-        return owner;
-    }
-
-    public int getDamage() {
-        return damage;
+    public BonusType getBonusType() {
+        return bonusType;
     }
 }

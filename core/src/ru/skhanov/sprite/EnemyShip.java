@@ -1,12 +1,16 @@
 package ru.skhanov.sprite;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.sun.prism.TextureMap;
 
+import ru.skhanov.base.MovingFont;
 import ru.skhanov.base.Sprite;
 import ru.skhanov.math.Rect;
 import ru.skhanov.math.Rnd;
+import ru.skhanov.pool.BonusPool;
 import ru.skhanov.pool.BulletPool;
 import ru.skhanov.pool.ExplosionPool;
 import ru.skhanov.utils.Regions;
@@ -16,11 +20,17 @@ public class EnemyShip extends Ship {
     private float reloadInterval;
     private float reloadTimer;
     private Vector2 acceleration = new Vector2(0, -0.5f);
+    private BonusPool bonusPool;
+    private TextureAtlas bonusTextureAtlas;
+    private Vector2 bonusV = new Vector2(0, -0.1f);
 
 
-    public EnemyShip(Sound shootSound, BulletPool bulletPool, ExplosionPool explosionPool) {
-        super(shootSound, bulletPool);
-        this.explosionPool = explosionPool;
+    public EnemyShip(Sound shootSound, BulletPool bulletPool, ExplosionPool explosionPool,
+                     MovingFont hpMoveFont, BonusPool bonusPool, TextureAtlas bonusTextureAtlas) {
+        super(shootSound, bulletPool, explosionPool, hpMoveFont);
+        this.shipType = ShipType.ENEMY_SHIP;
+        this.bonusPool = bonusPool;
+        this.bonusTextureAtlas = bonusTextureAtlas;
     }
 
     public void set(TextureRegion region,
@@ -35,7 +45,8 @@ public class EnemyShip extends Ship {
                     int damage) {
         regions = Regions.split(region, 1, 2, 2);
         setHeightProportion(height);
-        pos.set(Rnd.nextFloat(worldBounds.getLeft() + halfWidth, worldBounds.getRight() - halfWidth), worldBounds.getTop() + halfHeight);
+        pos.set(Rnd.nextFloat(worldBounds.getLeft() + halfWidth, worldBounds.getRight() - halfWidth),
+                worldBounds.getTop() + halfHeight);
         this.v.set(0, vY);
         this.worldBounds = worldBounds;
         this.reloadInterval = reloadInterval;
@@ -43,6 +54,7 @@ public class EnemyShip extends Ship {
         this.bulletVY.set(0, bulletVY);
         this.bulletHeight = bulletHeight;
         this.hp = hp;
+        this.initialHp = hp;
         this.damage = damage;
     }
 
@@ -79,7 +91,59 @@ public class EnemyShip extends Ship {
 
     @Override
     public void destroy() {
+        Bonus bonus = bonusPool.obtain();
+        generateBonus(bonus);
         super.destroy();
         boom();
+
+
     }
+
+    private void generateBonus(Bonus bonus) {
+        double drop = Math.random();
+        Bonus.BonusType bonusType = randomBonusDrop();
+        if(drop > 0.8) {
+            switch (bonusType) {
+                case MEDIC:
+                    bonus.set(bonusTextureAtlas.findRegion("medic"), bonusType, pos,
+                            bonusV, 0.05f, worldBounds);
+                    break;
+                case BULLET_POWER:
+                    bonus.set(bonusTextureAtlas.findRegion("bulletPower"), bonusType, pos,
+                            bonusV, 0.05f, worldBounds);
+                    break;
+                case BULLET_SPEED:
+                    bonus.set(bonusTextureAtlas.findRegion("bulletSpeed"), bonusType, pos,
+                            bonusV, 0.05f, worldBounds);
+                    break;
+                default:
+                    break;
+
+            }
+
+        } else {
+            bonus.destroy();
+        }
+    }
+
+    private Bonus.BonusType randomBonusDrop() {
+        Bonus.BonusType bonusType = null;
+        int bonusTypeRandom = (int) (Math.random() * 3);
+//        bonusTypeRandom = 2;
+        switch (bonusTypeRandom) {
+            case 0:
+                bonusType = Bonus.BonusType.MEDIC;
+                break;
+            case 1:
+                bonusType = Bonus.BonusType.BULLET_POWER;
+                break;
+            case 2:
+                bonusType = Bonus.BonusType.BULLET_SPEED;
+            default:
+                break;
+        }
+        return bonusType;
+    }
+
+
 }
