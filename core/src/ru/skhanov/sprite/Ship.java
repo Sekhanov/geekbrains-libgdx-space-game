@@ -68,9 +68,9 @@ public abstract class Ship extends Sprite {
 
 
 
-    protected void shoot(TextureRegion bulletRegion, Vector2 bulletV, float height, int damage) {
+    protected void shoot(TextureRegion bulletRegion, Vector2 bulletVY, float height, int damage) {
         Bullet bullet = bulletPool.obtain();
-        bullet.set(this, bulletRegion, pos, bulletV, height, worldBounds, damage);
+        bullet.set(this, bulletRegion, pos, bulletVY, height, worldBounds, damage);
         shootSound.play();
     }
 
@@ -118,9 +118,14 @@ public abstract class Ship extends Sprite {
         return hp;
     }
 
+    public void addHp(int hp) {
+        hpMoveFont.set(pos.x, pos.y);
+        this.hp += hp;
+    }
+
     protected void changeHpAnimation(Batch batch) {
-        if(hp != initialHp) {
-            String changeHp = String.valueOf(initialHp - hp);
+        if(hp < initialHp) {
+            String changeHp = "-" + String.valueOf(initialHp - hp);
             switch (shipType) {
                 case MAIN_SHIP:
                     hpMoveFont.draw(batch, changeHp, Color.RED);
@@ -134,6 +139,12 @@ public abstract class Ship extends Sprite {
                         initialHp = hp;
                     }
                     break;
+            }
+        } else if (hp > initialHp) {
+            String changeHp = "+" + String.valueOf(hp - initialHp);
+            hpMoveFont.draw(batch, changeHp, Color.GREEN);
+            if(hpMoveFont.getAnimationFrameCount() == 0) {
+                initialHp = hp;
             }
         }
 

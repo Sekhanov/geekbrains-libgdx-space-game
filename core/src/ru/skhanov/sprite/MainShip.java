@@ -1,14 +1,11 @@
 package ru.skhanov.sprite;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.skhanov.base.MovingFont;
-import ru.skhanov.base.Sprite;
 import ru.skhanov.math.Rect;
 import ru.skhanov.pool.BulletPool;
 import ru.skhanov.pool.ExplosionPool;
@@ -16,8 +13,8 @@ import ru.skhanov.pool.ExplosionPool;
 public class MainShip extends Ship {
 
 
-    private static final Vector2 MAIN_SHIP_BULLET_V = new Vector2(0, 0.3f);
-    private static final float MAIN_SHIP_BULLET_HEIGHT = 0.01f;
+    private static Vector2 mainShipBulletV = new Vector2(0, 0.3f);
+    private static float mainShipBulletHeight = 0.01f;
 
     private Vector2 v0 = new Vector2(0.5f, 0);
 
@@ -74,7 +71,7 @@ public class MainShip extends Ship {
                 break;
             case Input.Keys.UP:
             case Input.Keys.SPACE:
-                shoot(bulletRegion, MAIN_SHIP_BULLET_V, MAIN_SHIP_BULLET_HEIGHT, damage);
+                shoot(bulletRegion, mainShipBulletV, mainShipBulletHeight, damage);
                 break;
         }
         return false;
@@ -128,7 +125,7 @@ public class MainShip extends Ship {
     }
 
     public void moveRight() {
-        System.out.println( "shipRignt:" + getRight() + "/worldRight" + worldBounds.getRight());
+        System.out.println( "shipRight:" + getRight() + "/worldRight" + worldBounds.getRight());
             v.set(v0);
     }
 
@@ -145,6 +142,18 @@ public class MainShip extends Ship {
     public void destroy() {
         boom();
         super.destroy();
+    }
+
+    public void addMainShipBulletHeight(float mainShipBulletHeight) {
+        MainShip.mainShipBulletHeight += mainShipBulletHeight;
+    }
+
+    public void addDamage(int damage) {
+        this.damage += damage;
+    }
+
+    public void accelerateBullet(float v) {
+        mainShipBulletV.set(0, mainShipBulletV.y + v);
     }
 }
 

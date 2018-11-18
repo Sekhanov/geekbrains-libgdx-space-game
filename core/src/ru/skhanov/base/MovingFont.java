@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Align;
 
 public class MovingFont extends Font {
 
-    private static final String DAMAGE = "dm: -";
+    private static final String DAMAGE = "dm: ";
 
     private Vector2 pos;
     private Vector2 v;

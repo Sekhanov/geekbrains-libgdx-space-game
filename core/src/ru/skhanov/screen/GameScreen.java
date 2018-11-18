@@ -2,6 +2,7 @@ package ru.skhanov.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -26,6 +27,7 @@ import ru.skhanov.pool.BulletPool;
 import ru.skhanov.pool.EnemyShipPool;
 import ru.skhanov.pool.ExplosionPool;
 import ru.skhanov.sprite.Background;
+import ru.skhanov.sprite.Bonus;
 import ru.skhanov.sprite.Bullet;
 import ru.skhanov.sprite.Button;
 import ru.skhanov.sprite.EnemyShip;
@@ -57,6 +59,9 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
     private ExplosionPool explosionPool;
     private Music music;
     private Sound shootSound;
+    private Sound medicBonusSound;
+    private Sound bulletPowerBonusSound;
+    private Sound bulletSpeedBonusSound;
     private EnemyEmmiter enemyEmmiter;
     private Font font;
     private StringBuilder sbFrags;
@@ -65,6 +70,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
     private int frags;
     private MovingFont hpMoveFont;
     private BonusPool bonusPool;
+    private TextureAtlas bonusTextureAtlas;
 
     public GameScreen(Screen menuScreen, Game game) {
         this.menuScreen = menuScreen;
@@ -79,6 +85,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
         background = new Background(new TextureRegion(bgTexture));
         menuAtlas = new TextureAtlas("menuAtlas.tpack");
         mainAtlas = new TextureAtlas("mainAtlas.tpack");
+        bonusTextureAtlas = new TextureAtlas("bonus.atlas");
         font = new Font("Neucha.fnt", "Neucha.png");
         font.setFontSize(0.03f);
         hpMoveFont = new MovingFont("Neucha.fnt", "Neucha.png", new Vector2(0, 0.05f));
@@ -87,10 +94,13 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
         bulletPool = new BulletPool();
         bonusPool = new BonusPool();
         shootSound = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
+        medicBonusSound = Gdx.audio.newSound(Gdx.files.internal("medicBonusSound.mp3"));
+        bulletPowerBonusSound = Gdx.audio.newSound(Gdx.files.internal("bulletPowerBonusSound.mp3"));
+        bulletSpeedBonusSound = Gdx.audio.newSound(Gdx.files.internal("bulletSpeedBonusSound.mp3"));
         backButton = new Button(menuAtlas, "btExit", 0.05f);
         newGameButton = new Button(mainAtlas, "button_new_game", 0.05f);
         explosionPool = new ExplosionPool(mainAtlas.findRegion("explosion"), Gdx.audio.newSound(Gdx.files.internal("explosion.wav")));
-        enemyShipPool = new EnemyShipPool(shootSound, bulletPool, explosionPool, hpMoveFont, bonusPool);
+        enemyShipPool = new EnemyShipPool(shootSound, bulletPool, explosionPool, hpMoveFont, bonusPool, bonusTextureAtlas);
         enemyEmmiter = new EnemyEmmiter(enemyShipPool, worldBounds, mainAtlas);
         mainShip = new MainShip(mainAtlas.findRegion("main_ship"),
                 mainAtlas.findRegion("bulletMainShip"),
@@ -235,10 +245,9 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
     private void checkCollision() {
         List<EnemyShip> enemyShipList = enemyShipPool.getActiveObjects();
         List<Bullet>  enemyBulletList = bulletPool.getActiveObjects();
+        List<Bonus> bonusList = bonusPool.getActiveObjects();
         for(EnemyShip enemyShip: enemyShipList) {
-            if(enemyShip.isDestroyed()) {
-                continue;
-            }
+            if(enemyShip.isDestroyed()) continue;
             shipCollision(enemyShip);
             damageShipFromBullet(enemyBulletList, enemyShip, false);
             if(enemyShip.isDestroyed()) {
@@ -246,14 +255,42 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
 
             }
             damageShipFromBullet(enemyBulletList, mainShip, true);
+            grabBonus(bonusList);
+        }
+    }
+
+    private void grabBonus(List<Bonus> bonusList) {
+        for(Bonus bonus: bonusList) {
+            if(bonus.isDestroyed()) continue;
+            if(!mainShip.isOutside(bonus)) {
+               Bonus.BonusType bonusType = bonus.getBonusType();
+               switch (bonusType) {
+                   case MEDIC:
+                       mainShip.addHp(50);
+                       medicBonusSound.play();
+                       bonus.destroy();
+                       break;
+                   case BULLET_POWER:
+                       mainShip.addMainShipBulletHeight(0.01f);
+                       mainShip.addDamage(1);
+                       bulletPowerBonusSound.play();
+                       bonus.destroy();
+                       break;
+                   case BULLET_SPEED:
+                       mainShip.accelerateBullet(0.1f);
+                       bulletSpeedBonusSound.play();
+                       bonus.destroy();
+                       break;
+                   default:
+                       break;
+               }
+            }
         }
     }
 
     private void damageShipFromBullet(List<Bullet> enemyBulletList, Ship ship, boolean isMainShip) {
         for(Bullet bullet: enemyBulletList) {
-            if(bullet.isDestroyed() || bullet.getOwner().equals(mainShip) == isMainShip) {
-                continue;
-            }
+            if(bullet.isDestroyed() || bullet.getOwner().equals(mainShip) == isMainShip) continue;
             if(ship.isBulletCollision(bullet)) {
                 bullet.destroy();
                 ship.damage(bullet.getDamage());
@@ -275,6 +312,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
         bulletPool.freeAllDestroyedActiveObjects();
         enemyShipPool.freeAllDestroyedActiveObjects();
         explosionPool.freeAllDestroyedActiveObjects();
+        bonusPool.freeAllDestroyedActiveObjects();
     }
 
     @Override

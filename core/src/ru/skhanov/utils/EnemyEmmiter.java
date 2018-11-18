@@ -47,7 +47,6 @@ public class EnemyEmmiter {
         }
     }
 
-
     public int getLevel() {
         return level;
     }

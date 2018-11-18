@@ -26,11 +26,11 @@ public class EnemyShip extends Ship {
 
 
     public EnemyShip(Sound shootSound, BulletPool bulletPool, ExplosionPool explosionPool,
-                     MovingFont hpMoveFont, BonusPool bonusPool) {
+                     MovingFont hpMoveFont, BonusPool bonusPool, TextureAtlas bonusTextureAtlas) {
         super(shootSound, bulletPool, explosionPool, hpMoveFont);
         this.shipType = ShipType.ENEMY_SHIP;
         this.bonusPool = bonusPool;
-        this.bonusTextureAtlas = new TextureAtlas("bonus.atlas");
+        this.bonusTextureAtlas = bonusTextureAtlas;
     }
 
     public void set(TextureRegion region,
@@ -109,11 +109,11 @@ public class EnemyShip extends Ship {
                             bonusV, 0.05f, worldBounds);
                     break;
                 case BULLET_POWER:
-                    bonus.set(bonusTextureAtlas.findRegion("bullet_power"), bonusType, pos,
+                    bonus.set(bonusTextureAtlas.findRegion("bulletPower"), bonusType, pos,
                             bonusV, 0.05f, worldBounds);
                     break;
                 case BULLET_SPEED:
-                    bonus.set(bonusTextureAtlas.findRegion("bullet_speed"), bonusType, pos,
+                    bonus.set(bonusTextureAtlas.findRegion("bulletSpeed"), bonusType, pos,
                             bonusV, 0.05f, worldBounds);
                     break;
                 default:
@@ -127,6 +127,7 @@ public class EnemyShip extends Ship {
     private Bonus.BonusType randomBonusDrop() {
         Bonus.BonusType bonusType = null;
         int bonusTypeRandom = (int) (Math.random() * 3);
+//        bonusTypeRandom = 2;
         switch (bonusTypeRandom) {
             case 0:
                 bonusType = Bonus.BonusType.MEDIC;
