@@ -126,7 +126,7 @@ public class GameScreen extends Base2DScreen implements Consumer<Button> {
 
     private void playMusic() {
         music = Gdx.audio.newMusic(Gdx.files.internal("B&DDLevel5.mp3"));
-//        music.play();
+        music.play();
         music.setLooping(true);
     }
 

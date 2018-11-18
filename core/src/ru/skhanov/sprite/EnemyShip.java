@@ -102,7 +102,7 @@ public class EnemyShip extends Ship {
     private void generateBonus(Bonus bonus) {
         double drop = Math.random();
         Bonus.BonusType bonusType = randomBonusDrop();
-        if(drop > 0.1) {
+        if(drop > 0.8) {
             switch (bonusType) {
                 case MEDIC:
                     bonus.set(bonusTextureAtlas.findRegion("medic"), bonusType, pos,
@@ -121,6 +121,8 @@ public class EnemyShip extends Ship {
 
             }
 
+        } else {
+            bonus.destroy();
         }
     }
 

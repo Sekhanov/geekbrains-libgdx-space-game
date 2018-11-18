@@ -25,8 +25,9 @@ public class EnemyEmmiter {
     }
 
     public void generate(float delta, int frags) {
-        level = frags / 10;
+        level = frags / 5;
         generateInterval = 5 - (level * 0.5f);
+        if(generateInterval < 1) generateInterval = 1;
         generateTimer += delta;
         if(generateTimer > generateInterval) {
             generateTimer = 0;
